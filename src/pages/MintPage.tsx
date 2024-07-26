@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useWalletStore } from "../store/useWalletStore";
 import useMintService from "../services/contracts/cosmoships.service";
+import Header from "../components/header2/Header";
 
 const MintPage: React.FC = () => {
   const [tokenId, setTokenId] = useState<number>(0);
@@ -18,6 +19,7 @@ const MintPage: React.FC = () => {
 
   return (
     <div>
+      <Header />
       <h1>Mint Tokens</h1>
       <label htmlFor="token-id">Token ID: </label>
       <input
