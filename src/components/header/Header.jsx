@@ -6,9 +6,10 @@ import logoheader from '../../assets/images/logo/logo.png'
 import logoheader2x from '../../assets/images/logo/logo@2x.png'
 import logodark from '../../assets/images/logo/logo_dark.png'
 import logodark2x from '../../assets/images/logo/logo_dark@2x.png'
-import imgsun from '../../assets/images/icon/sun.png'
 import avt from '../../assets/images/avatar/avt-2.jpg'
-
+import coin from '../../assets/images/logo/coin.svg'
+import NetworkButton from "./NetworkButton";
+import WalletButton from "./WalletButton";
 
 const Header = () => {
     const { pathname } = useLocation();
@@ -49,63 +50,50 @@ const Header = () => {
         <header id="header_main" className="header_1 js-header" ref={headerRef}>
             <div className="themesflat-container">
                 <div className="row">
-                    <div className="col-md-12">                              
-                        <div id="site-header-inner"> 
+                    <div className="col-md-12">
+                        <div id="site-header-inner">
                             <div className="wrap-box flex">
                                 <div id="site-logo" className="clearfix">
                                     <div id="site-logo-inner">
                                         <Link to="/" rel="home" className="main-logo">
-                                            <img className='logo-dark'  id="logo_header" src={logodark} srcSet={`${logodark2x}`} alt="nft-gaming" />
-                                            <img className='logo-light'  id="logo_header" src={logoheader} srcSet={`${logoheader2x}`} alt="nft-gaming" />
+                                            <img className='logo-dark' id="logo_header" src={logodark}
+                                                 srcSet={`${logodark2x}`} alt="nft-gaming"/>
+                                            <img className='logo-light' id="logo_header" src={logoheader}
+                                                 srcSet={`${logoheader2x}`} alt="nft-gaming"/>
                                         </Link>
                                     </div>
                                 </div>
                                 <div className="mobile-button" ref={btnToggle} onClick={menuToggle}><span></span></div>
-                                <nav id="main-nav" className="main-nav" ref={menuLeft} >
+                                <nav id="main-nav" className="main-nav" ref={menuLeft}>
                                     <ul id="menu-primary-menu" className="menu">
                                         {
-                                            menus.map((data,index) => (
-                                                <li key={index} onClick={()=> handleOnClick(index)} className={`menu-item ${data.namesub ? 'menu-item-has-children' : '' } ${activeIndex === index ? 'active' : ''} ` }   >
+                                            menus.map((data, index) => (
+                                                <li key={index} onClick={() => handleOnClick(index)}
+                                                    className={`menu-item ${data.namesub ? 'menu-item-has-children' : ''} ${activeIndex === index ? 'active' : ''} `}>
                                                     <Link to={data.links}>{data.name}</Link>
                                                     {
-                                                         data.namesub &&
-                                                         <ul className="sub-menu" >
+                                                        data.namesub &&
+                                                        <ul className="sub-menu">
                                                             {
                                                                 data.namesub.map((submenu) => (
                                                                     <li key={submenu.id} className={
                                                                         pathname === submenu.links
-                                                                        ? "menu-item current-item"
-                                                                        : "menu-item"
+                                                                            ? "menu-item current-item"
+                                                                            : "menu-item"
                                                                     }><Link to={submenu.links}>{submenu.sub}</Link></li>
                                                                 ))
                                                             }
                                                         </ul>
                                                     }
-                                                    
+
                                                 </li>
                                             ))
                                         }
                                     </ul>
                                 </nav>
                                 <div className="flat-search-btn flex">
-                                    <div className="header-search flat-show-search" id="s1">
-                                        <Link to="#" className="show-search header-search-trigger" onClick={searchBtn}>
-                                            <i className="far fa-search"></i>
-                                        </Link>
-                                        <div className="top-search" ref={btnSearch}>
-                                            <form action="#" method="get" role="search" className="search-form">
-                                                <input type="search" id="s" className="search-field" placeholder="Search..." name="s" title="Search for" required="" />
-                                                <button className="search search-submit" type="submit" title="Search">
-                                                    <i className="icon-fl-search-filled"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div className="sc-btn-top mg-r-12" id="site-header">
-                                        <Link to="/wallet-connect" className="sc-button header-slider style style-1 wallet fl-button pri-1"><span>Wallet connect
-                                        </span></Link>
-                                    </div>
-
+                                    <NetworkButton/>
+                                    <WalletButton/>
                                     <div className="admin_active" id="header_admin">
                                         <div className="header_avatar">
                                             <div className="price">
@@ -115,9 +103,10 @@ const Header = () => {
                                                 className="avatar"
                                                 src={avt}
                                                 alt="avatar"
-                                                />
+                                            />
                                             <div className="avatar_popup mt-20">
-                                                <div className="d-flex align-items-center copy-text justify-content-between">
+                                                <div
+                                                    className="d-flex align-items-center copy-text justify-content-between">
                                                     <span> 13b9ebda035r178... </span>
                                                     <Link to="/" className="ml-2">
                                                         <i className="fal fa-copy"></i>
@@ -126,12 +115,13 @@ const Header = () => {
                                                 <div className="d-flex align-items-center mt-10">
                                                     <img
                                                         className="coin"
-                                                        src={imgsun}
+                                                        src={coin}
                                                         alt="/"
-                                                        />
+                                                    />
                                                     <div className="info ml-10">
                                                         <p className="text-sm font-book text-gray-400">Balance</p>
-                                                        <p className="w-full text-sm font-bold text-green-500">16.58 ETH</p>
+                                                        <p className="w-full text-sm font-bold text-green-500">16.58
+                                                            ETH</p>
                                                     </div>
                                                 </div>
                                                 <div className="hr"></div>
@@ -150,12 +140,12 @@ const Header = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <DarkMode />
+            <DarkMode/>
         </header>
     );
 }

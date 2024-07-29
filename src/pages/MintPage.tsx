@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useWalletStore } from "../store/useWalletStore";
 import useMintService from "../services/contracts/cosmoships.service";
-import Header from "../components/header2/Header";
+import Header from "../components/header/Header";
 
 const MintPage: React.FC = () => {
   const [tokenId, setTokenId] = useState<number>(0);
