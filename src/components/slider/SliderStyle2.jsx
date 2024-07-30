@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/scss';
@@ -7,11 +7,29 @@ import 'swiper/scss/pagination';
 import img1 from '../../assets/images/box-item/item-h5.1.png'
 import img2 from '../../assets/images/box-item/item-h5.2.png'
 import img3 from '../../assets/images/box-item/item-h5.3.png'
+import useMintService from "../../services/contracts/cosmoships.service";
+import {useWalletStore} from "../../store/useWalletStore";
+import MintSection from "../header/MintSection";
 
 const SliderStyle2 = () => {
     const subtitle = 'NFT MARKETPLACE'
-    const title = 'Discover, find and sell extraordinary monster NFTs'
-    const description = 'Marketplace for monster character cllections non fungible token NFTs'
+    const title = 'Mint, play & earn with your favorite cosmo ships'
+
+    const [tokenId, setTokenId] = useState(0);
+    const { connectWallet, isOnCorrectNetwork, account } = useWalletStore();
+    const { mintTokens } = useMintService();
+
+    const handleMint = async () => {
+        try {
+            if (!account) {
+                await connectWallet();
+            }
+            await mintTokens(tokenId);
+        } catch (error) {
+            alert(error);
+        }
+    };
+
     return (
         <section className="flat-title-page home5">
             <div className="overlay"></div>
@@ -21,18 +39,23 @@ const SliderStyle2 = () => {
                         <h4 className="mg-bt-11"><span className="fill">{subtitle}</span></h4>
                         <h1 className="heading">{title}
                         </h1>
-                        <p className="sub-heading mg-t-7 mg-bt-39">{description}
-                        </p>
-                        <div className="flat-bt-slider style2 flex">
-                            <a href="/create-item" className="sc-button header-slider style style-1 rocket fl-button pri-1"><span>Create
-                            </span></a>
-                            <a href="/explore-01" className="sc-button header-slider style style-1 note fl-button pri-1"><span>Explore
-                            </span></a>
+                        <p className="sub-heading mg-t-7 mg-bt-39"></p>
+                        <p/><p/><p/>
+                        <div className="col-md-12 text-center">
+                            <h2 className="tf-title">Mint your Cosmo Ship</h2>
+                            <h5 className="sub-title">Enter the Token ID of the Cosmo Ship you want to mint</h5>
                         </div>
+                        <MintSection
+                            tokenId={tokenId}
+                            setTokenId={setTokenId}
+                            handleMint={handleMint}
+                            isOnCorrectNetwork={isOnCorrectNetwork}
+                            account={account}
+                        />
                     </div>
 
                     <Swiper
-                        modules={[ Autoplay ]}
+                        modules={[Autoplay ]}
                         direction={"vertical"}
                         spaceBetween={10}
                         slidesPerView={5}

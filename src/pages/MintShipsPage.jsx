@@ -33,50 +33,12 @@ const MintShipsPage = () => {
 
     return (
         <div className='home-5'>
-            <HeaderStyle2 />
-            <SliderStyle2 data={heroSliderData} />
-            <section className="tf-section live-auctions style4 no-pt-mb mobie-style">
-                <div className="themesflat-container">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className="heading-live-auctions">
-                                <h2 className="tf-title pb-17 text-left">
-                                    Mint your Cosmo Ship
-                                </h2>
-                                <h5 className="sub-title">Enter the Token ID of the Cosmo Ship you want to mint</h5>
-                            </div>
-                        </div>
-                        <div className="col-md-12">
-                            <div className="sc-item-details">
-                                <div className="client-infor sc-card-product">
-                                    <div className="meta-info">
-                                        <div className="author">
-                                            <div className="info">
-                                                <span>Token ID</span>
-                                                <input
-                                                    type="number"
-                                                    className="form-control"
-                                                    value={tokenId}
-                                                    onChange={(e) => setTokenId(Number(e.target.value))}
-                                                    placeholder="Enter Token ID"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={handleMint}
-                                    disabled={!isOnCorrectNetwork}
-                                    className="sc-button loadmore style bag fl-button pri-3"
-                                >
-                                    <span>{account ? "Mint Now" : "Connect Wallet"}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <HeaderStyle2/>
+            <SliderStyle2 data={heroSliderData}/>
+            <section className="flat-title-page style2">
+                <div className="overlay"></div>
             </section>
-            <Footer />
+            <Footer/>
         </div>
     );
 }
