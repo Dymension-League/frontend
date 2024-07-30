@@ -1,26 +1,46 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useWalletStore } from "../../store/useWalletStore";
 import config from "../../config";
 
-const NetworkButton = () => {
-  const { networkName, switchNetwork, account, networkChainId } =
-    useWalletStore();
+const NetworkButton: React.FC = () => {
+  const { isOnCorrectNetwork, networkName, networkChainId, account, switchNetwork } = useWalletStore();
 
-  const handleSwitch = () => {
-    switchNetwork(config.networkId.toString());
+  const handleSwitch = async () => {
+    if (!isOnCorrectNetwork) {
+      try {
+        const networkIdString = config.networkId.toString();
+        const result = await switchNetwork(networkIdString);
+        if (result === undefined) {
+          console.warn("Network switch result was undefined");
+        }
+      } catch (error) {
+        console.error("Failed to switch network:", error);
+      }
+    }
   };
 
-  useEffect(() => {}, [networkName, account, networkChainId]);
+  useEffect(() => {
+    if (account && !isOnCorrectNetwork) {
+      handleSwitch();
+    }
+  }, [account, isOnCorrectNetwork]);
 
   if (!account) {
     return null;
   }
 
-  if (networkChainId !== Number(config.networkId)) {
-    return <button onClick={handleSwitch}>Switch Network</button>;
-  }
-
-  return <button onClick={handleSwitch}>{networkName}</button>;
+  return (
+      <button
+          onClick={handleSwitch}
+          className="sc-button header-slider style style-1 wallet fl-button pri-1"
+      >
+      <span>
+        {isOnCorrectNetwork
+            ? `${networkName || 'Correct Network'}`
+            : `Switch to ${config.networkName}`}
+      </span>
+      </button>
+  );
 };
 
 export default NetworkButton;

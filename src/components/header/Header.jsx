@@ -6,8 +6,6 @@ import logoheader from '../../assets/images/logo/logo.png'
 import logoheader2x from '../../assets/images/logo/logo@2x.png'
 import logodark from '../../assets/images/logo/logo_dark.png'
 import logodark2x from '../../assets/images/logo/logo_dark@2x.png'
-import avt from '../../assets/images/avatar/avt-2.jpg'
-import coin from '../../assets/images/logo/coin.svg'
 import NetworkButton from "./NetworkButton";
 import WalletButton from "./WalletButton";
 
@@ -43,7 +41,7 @@ const Header = () => {
 
     const [activeIndex, setActiveIndex] = useState(null);
     const handleOnClick = index => {
-        setActiveIndex(index); 
+        setActiveIndex(index);
     };
 
     return (
@@ -56,24 +54,21 @@ const Header = () => {
                                 <div id="site-logo" className="clearfix">
                                     <div id="site-logo-inner">
                                         <Link to="/" rel="home" className="main-logo">
-                                            <img className='logo-dark' id="logo_header" src={logodark}
-                                                 srcSet={`${logodark2x}`} alt="nft-gaming"/>
-                                            <img className='logo-light' id="logo_header" src={logoheader}
-                                                 srcSet={`${logoheader2x}`} alt="nft-gaming"/>
+                                            <img className='logo-dark'  id="logo_header" src={logodark} srcSet={`${logodark2x}`} alt="nft-gaming" />
+                                            <img className='logo-light'  id="logo_header" src={logoheader} srcSet={`${logoheader2x}`} alt="nft-gaming" />
                                         </Link>
                                     </div>
                                 </div>
                                 <div className="mobile-button" ref={btnToggle} onClick={menuToggle}><span></span></div>
-                                <nav id="main-nav" className="main-nav" ref={menuLeft}>
+                                <nav id="main-nav" className="main-nav" ref={menuLeft} >
                                     <ul id="menu-primary-menu" className="menu">
                                         {
-                                            menus.map((data, index) => (
-                                                <li key={index} onClick={() => handleOnClick(index)}
-                                                    className={`menu-item ${data.namesub ? 'menu-item-has-children' : ''} ${activeIndex === index ? 'active' : ''} `}>
+                                            menus.map((data,index) => (
+                                                <li key={index} onClick={()=> handleOnClick(index)} className={`menu-item ${data.namesub ? 'menu-item-has-children' : '' } ${activeIndex === index ? 'active' : ''} ` }   >
                                                     <Link to={data.links}>{data.name}</Link>
                                                     {
                                                         data.namesub &&
-                                                        <ul className="sub-menu">
+                                                        <ul className="sub-menu" >
                                                             {
                                                                 data.namesub.map((submenu) => (
                                                                     <li key={submenu.id} className={
@@ -92,60 +87,15 @@ const Header = () => {
                                     </ul>
                                 </nav>
                                 <div className="flat-search-btn flex">
-                                    <NetworkButton/>
-                                    <WalletButton/>
-                                    <div className="admin_active" id="header_admin">
-                                        <div className="header_avatar">
-                                            <div className="price">
-                                                <span>2.45 <strong>ETH</strong> </span>
-                                            </div>
-                                            <img
-                                                className="avatar"
-                                                src={avt}
-                                                alt="avatar"
-                                            />
-                                            <div className="avatar_popup mt-20">
-                                                <div
-                                                    className="d-flex align-items-center copy-text justify-content-between">
-                                                    <span> 13b9ebda035r178... </span>
-                                                    <Link to="/" className="ml-2">
-                                                        <i className="fal fa-copy"></i>
-                                                    </Link>
-                                                </div>
-                                                <div className="d-flex align-items-center mt-10">
-                                                    <img
-                                                        className="coin"
-                                                        src={coin}
-                                                        alt="/"
-                                                    />
-                                                    <div className="info ml-10">
-                                                        <p className="text-sm font-book text-gray-400">Balance</p>
-                                                        <p className="w-full text-sm font-bold text-green-500">16.58
-                                                            ETH</p>
-                                                    </div>
-                                                </div>
-                                                <div className="hr"></div>
-                                                <div className="links mt-20">
-                                                    <Link to="#">
-                                                        <i className="fab fa-accusoft"></i> <span> My items</span>
-                                                    </Link>
-                                                    <a className="mt-10" href="/edit-profile">
-                                                        <i className="fas fa-pencil-alt"></i> <span> Edit Profile</span>
-                                                    </a>
-                                                    <a className="mt-10" href="/login" id="logout">
-                                                        <i className="fal fa-sign-out"></i> <span> Logout</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <NetworkButton className="sc-button header-slider style style-1 wallet fl-button pri-1"/>
+                                    <WalletButton className="sc-button header-slider style style-1 wallet fl-button pri-1"/>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <DarkMode/>
+            <DarkMode />
         </header>
     );
 }

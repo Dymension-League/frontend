@@ -12,12 +12,13 @@ interface WalletState {
   isOnCorrectNetwork: boolean;
   isEthereumAvailable: boolean;
   connectWallet: () => Promise<void>;
-  switchNetwork: (chainId: string) => Promise<void>;
+  switchNetwork: (chainId: string | bigint) => Promise<boolean | undefined>;
+  checkConnection: () => Promise<void>;
 }
 
 export const useWalletStore = create<WalletState>((set, get) => {
   const isEthereumAvailable =
-    typeof window !== "undefined" && !!window.ethereum;
+      typeof window !== "undefined" && !!window.ethereum;
 
   const subscribeToWalletEvents = (provider: ethers.BrowserProvider) => {
     if (isEthereumAvailable) {
@@ -47,7 +48,7 @@ export const useWalletStore = create<WalletState>((set, get) => {
           networkName: network.name,
           networkChainId,
           isOnCorrectNetwork:
-            networkChainId === Number(config.networkId) && accounts.length > 0,
+              networkChainId === Number(config.networkId) && accounts.length > 0,
           error: null,
         });
       } catch (error) {
@@ -56,19 +57,20 @@ export const useWalletStore = create<WalletState>((set, get) => {
       }
     } else {
       alert(
-        "Ethereum wallet not found, install MetaMask or other browser wallet."
+          "Ethereum wallet not found, install MetaMask or other browser wallet."
       );
     }
   };
 
-  const switchNetwork = async (chainId: string) => {
+  const switchNetwork =  async (chainId: string | bigint): Promise<boolean | undefined> => {
     try {
-      const formattedChainId = ethers.toQuantity(Number(chainId));
+      const formattedChainId = ethers.toQuantity(chainId);
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: formattedChainId }],
       });
       await get().connectWallet();
+      return true;
     } catch (error: any) {
       if (error.code === 4902) {
         try {
@@ -87,6 +89,7 @@ export const useWalletStore = create<WalletState>((set, get) => {
             params: [networkParams],
           });
           await get().connectWallet();
+          return true;
         } catch (addError) {
           console.error("Error adding new network:", addError);
           set({ error: addError as Error, isOnCorrectNetwork: false });
@@ -94,6 +97,17 @@ export const useWalletStore = create<WalletState>((set, get) => {
       } else {
         console.error("Error switching networks:", error);
         set({ error: error as Error, isOnCorrectNetwork: false });
+      }
+      return false;
+    }
+  };
+
+  const checkConnection = async () => {
+    if (isEthereumAvailable) {
+      const provider = new ethers.BrowserProvider(window.ethereum, "any");
+      const accounts = await provider.listAccounts();
+      if (accounts.length > 0) {
+        await connectWallet();
       }
     }
   };
@@ -109,5 +123,6 @@ export const useWalletStore = create<WalletState>((set, get) => {
     isEthereumAvailable,
     connectWallet,
     switchNetwork,
+    checkConnection
   };
 });

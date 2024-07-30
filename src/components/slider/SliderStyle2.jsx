@@ -1,5 +1,5 @@
 import React from 'react';
-import { Autoplay } from 'swiper';
+import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/scss';
 import 'swiper/scss/navigation';
@@ -19,8 +19,8 @@ const SliderStyle2 = () => {
                 <div className="wrap-heading flat-slider d-flex align-items-center">
                     <div className="content">
                         <h4 className="mg-bt-11"><span className="fill">{subtitle}</span></h4>
-                        <h1 className="heading">{title}                                                                                      
-                        </h1>	
+                        <h1 className="heading">{title}
+                        </h1>
                         <p className="sub-heading mg-t-7 mg-bt-39">{description}
                         </p>
                         <div className="flat-bt-slider style2 flex">
@@ -112,10 +112,10 @@ const SliderStyle2 = () => {
                         <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
 
                     </Swiper>
-                   
-                    
+
+
                 </div>
-            </div>                           
+            </div>
         </section>
     );
 }
