@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+
+.icon-default {
+  /* Default styles */
+  font-size: 24px;
+  color: #000;
+}
+
+.icon-2x {
+  /* 2x styles */
+  font-size: 48px;
+  color: #000;
+}
+
+.icon-dark {
+  /* Dark styles */
+  font-size: 24px;
+  color: #333;
+}
+
+.icon-dark-2x {
+  /* Dark 2x styles */
+  font-size: 48px;
+  color: #333;
+}

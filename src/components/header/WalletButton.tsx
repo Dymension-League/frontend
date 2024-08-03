@@ -1,24 +1,22 @@
-import { useEffect } from "react";
+import React from "react";
 import { useWalletStore } from "../../store/useWalletStore";
 
-const WalletButton = () => {
-  const { isEthereumAvailable, connectWallet, account } = useWalletStore();
+const WalletButton: React.FC = () => {
+    const { connectWallet, account } = useWalletStore();
 
-  useEffect(() => {
-    if (isEthereumAvailable) connectWallet();
-  }, [isEthereumAvailable, connectWallet]);
+    const handleClick = () => {
+        connectWallet();
+    };
 
-  const formattedAccount = account
-    ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
-    : "";
+    const buttonText = account
+        ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
+        : "Connect Wallet";
 
-  return (
-    <div>
-      <button onClick={connectWallet}>
-        {account ? formattedAccount : "Connect Wallet"}
-      </button>
-    </div>
-  );
+    return (
+        <button onClick={handleClick} className="sc-button header-slider style style-1 wallet fl-button pri-1">
+            <span>{buttonText}</span>
+        </button>
+    );
 };
 
 export default WalletButton;

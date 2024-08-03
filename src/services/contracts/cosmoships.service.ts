@@ -35,8 +35,17 @@ const useMintService = () => {
       await tx.wait();
       alert("Mint successful!");
     } catch (error) {
-      console.error(error);
-      alert("Mint failed!");
+      if (error instanceof Error) {
+        alert(`Mint failed: ${error.message}`);
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        alert(`Mint failed: ${(error as { message: string }).message}`);
+      } else {
+        alert("Mint failed for an unknown reason");
+      }
+
+      if (typeof error === 'object' && error !== null) {
+        console.log("Error details:", JSON.stringify(error, null, 2));
+      }
     }
   };
 
