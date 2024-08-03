@@ -67,11 +67,11 @@ const SliderStyle2 = () => {
                         }}
                         speed= {2000}
                     >
-                        <SwiperSlide><img src={img1} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
+                        <SwiperSlide><img src={img1} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img2} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img2} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
 
                     </Swiper>
                     <Swiper
@@ -87,11 +87,11 @@ const SliderStyle2 = () => {
                         }}
                         speed= {2100}
                     >
-                        <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img1} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img1} alt="Axies" /></SwiperSlide>
+                        <SwiperSlide><img src={img2} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img1} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img1} alt="Dymension League" /></SwiperSlide>
 
                     </Swiper>
                     <Swiper
@@ -107,11 +107,11 @@ const SliderStyle2 = () => {
                         }}
                         speed= {2200}
                     >
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img1} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img1} alt="Axies" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img1} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img2} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img1} alt="Dymension League" /></SwiperSlide>
 
                     </Swiper>
                     <Swiper
@@ -128,11 +128,11 @@ const SliderStyle2 = () => {
                         speed= {2000}
                         className="end"
                     >
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img3} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img1} alt="Axies" /></SwiperSlide>
-                        <SwiperSlide><img src={img2} alt="Axies" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img2} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img3} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img1} alt="Dymension League" /></SwiperSlide>
+                        <SwiperSlide><img src={img2} alt="Dymension League" /></SwiperSlide>
 
                     </Swiper>
 
