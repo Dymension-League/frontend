@@ -1,0 +1,65 @@
+.spaceship-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.spaceship-item {
+    background-color: var(--card-bg-color, #1e1e2d);
+    border: 2px solid var(--card-border-color, #2c2c3d);
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.spaceship-item:hover {
+    border-color: #8358ff;
+}
+
+.spaceship-item.selected {
+    border-color: #8358ff;
+    background-color: var(--card-selected-bg-color, #2a2a3d);
+}
+
+.spaceship-name {
+    color: var(--text-color, #fff);
+    font-size: 16px;
+}
+
+.create-team-button {
+    background-color: #8358ff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-team-button:hover {
+    background-color: #9d71ff;
+}
+
+.create-team-button:disabled {
+    background-color: #4a4a5a;
+    cursor: not-allowed;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+    --card-bg-color: #2c2c3d;
+    --card-border-color: #3a3a4d;
+    --card-selected-bg-color: #373748;
+    --text-color: #e0e0e0;
+}
+
+body.light {
+    --card-bg-color: #fff;
+    --card-border-color: #ddd;
+    --card-selected-bg-color: #f0f0f0;
+    --text-color: #333;
+}

@@ -1,7 +1,7 @@
 const menus = [
     {
         name: 'Mint',
-        links: '/mint'
+        links: '/mint-ships'
     },
     {
         name: 'Create Team',
