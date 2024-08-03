@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import Footer from '../components/footer/Footer';
-import heroSliderData from '../assets/fake-data/data-slider';
-import { useWalletStore } from "../store/useWalletStore";
-import useMintService from "../services/contracts/cosmoships.service";
-import Header from "../components/header/Header";
+import Footer from '../../components/footer/Footer';
+import heroSliderData from '../../assets/fake-data/data-slider';
+import { useWalletStore } from "../../store/useWalletStore";
+import useMintService from "../../services/contracts/cosmoships.service";
+import Header from "../../components/header/Header";
 import 'swiper/scss';
 import 'swiper/scss/navigation';
 import 'swiper/scss/pagination';
-import SliderStyle2 from '../components/slider/SliderStyle2';
+import SliderStyle2 from '../../components/slider/SliderStyle2';
 
 
 const MintShips = () => {

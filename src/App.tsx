@@ -1,12 +1,12 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home01 from "./pages/Home01";
-import MintShips from "./pages/MintShips";
-import MintPage from "./pages/MintPage";
+import MintShips from "./pages/MintShip/MintShips";
+import MintPage from "./pages/MintShip/MintPage";
 import React, {useEffect} from "react";
-import MintShipsPage from "./pages/MintShipsPage";
+import MintShipsPage from "./pages/MintShip/MintShipsPage";
 import {useWalletStore} from "./store/useWalletStore";
 import CreateTeamPage from "./pages/CreateTeamPage/CreateTeamPage";
+import Home from "./pages/Home/Home";
 
 function App() {
     const { checkConnection } = useWalletStore();
@@ -18,7 +18,7 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Home01 />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/mint" element={<MintShips />} />
                 <Route path="/mintPage" element={<MintPage />} />
                 <Route path="/mint-ships" element={<MintShipsPage />} />

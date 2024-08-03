@@ -5,6 +5,7 @@ import Footer from '../../components/footer/Footer';
 import { useWalletStore } from "../../store/useWalletStore";
 import SpaceshipSelector from './SpaceshipSelector';
 import './styles/CreateTeam.css';
+import Header from "../../components/header/Header";
 
 const CreateTeamPage = () => {
     const [teamName, setTeamName] = useState('');
@@ -182,7 +183,7 @@ const CreateTeamPage = () => {
 
     return (
         <div className='create-team'>
-            <HeaderStyle2 />
+            <Header />
             <section className="flat-title-page inner">
                 <div className="overlay"></div>
                 <div className="themesflat-container">

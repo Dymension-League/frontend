@@ -6,13 +6,22 @@ import imgbg2 from '../images/slider/bg_slide_1.png'
 
 const heroSliderData = [
     {
+        title_1: "Create your ships,",
+        title_2: "Team Up, and",
+        title_3: "Conquer the Cosmos",
+        description: "Form powerful alliances and dominate the universe.",
+        img: img1,
+        imgbg: imgbg1,
+        class: 'left'
+    },
+    {
         title_1: "Trade, Play, Earn,",
         title_2: "with extraordinary",
         title_3: "Spaceships",
-        description: "NFTs on higher Dymensions",
-        img: img1,
-        imgbg: imgbg1,
-        class:'left'
+        description: "Join the marketplace to explore rare NFT spaceships.",
+        img: img2,
+        imgbg: imgbg2,
+        class: 'center'
     },
     {
         title_1: "Discover, find,",
@@ -21,18 +30,8 @@ const heroSliderData = [
         description: "Marketplace for monster character cllections non fungible token NFTs",
         img: img2,
         imgbg: imgbg2,
-        class:'center'
+        class: 'right'
     },
-    {
-        title_1: "Discover, find,",
-        title_2: "Sell extraordinary",
-        title_3: "Monster NFTs",
-        description: "Marketplace for monster character cllections non fungible token NFTs",
-        img: img2,
-        imgbg: imgbg2,
-        class:'right'
-    },
-    
-]
+];
 
 export default heroSliderData;

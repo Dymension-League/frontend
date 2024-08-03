@@ -1166,6 +1166,46 @@
     height: auto !important;
   }
 
+  #header_main .flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #header_main .flex-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .header_1 #main-nav {
+    flex-grow: 1;
+    text-align: right;
+  }
+
+  .header_1 #main-nav .menu {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+
+  .header_1 #main-nav .menu-item {
+    position: relative;
+  }
+
+  .header_1 #main-nav .menu-item-has-children .sub-menu {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    display: none;
+  }
+
+  .header_1 #main-nav .menu-item-has-children:hover .sub-menu {
+    display: block;
+  }
+
+
   .flat-title-page.style2 .shape.item-w-68,
   .flat-title-page.style2 .img-bg,
   .box-title-login::before,

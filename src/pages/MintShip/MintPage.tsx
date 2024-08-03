@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Footer from '../components/footer/Footer';
-import heroSliderData from '../assets/fake-data/data-slider';
-import { useWalletStore } from "../store/useWalletStore";
-import useMintService from "../services/contracts/cosmoships.service";
-import Header from "../components/header/Header";
+import Footer from '../../components/footer/Footer';
+import heroSliderData from '../../assets/fake-data/data-slider';
+import { useWalletStore } from "../../store/useWalletStore";
+import useMintService from "../../services/contracts/cosmoships.service";
+import Header from "../../components/header/Header";
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import 'swiper/scss';
