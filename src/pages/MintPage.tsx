@@ -21,7 +21,7 @@ const MintPage = () => {
             if (!account) {
                 await connectWallet();
             }
-            await mintTokens(tokenId);
+            await mintTokens();
         } catch (error) {
             alert(error);
         }

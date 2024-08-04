@@ -17,6 +17,9 @@
 .env.development.local
 .env.test.local
 .env.production.local
+src/artifacts/contracts/LocalGameLeague.json
+src/artifacts/contracts/LocalCosmoShips.json
+.tool-versions
 
 npm-debug.log*
 yarn-debug.log*
