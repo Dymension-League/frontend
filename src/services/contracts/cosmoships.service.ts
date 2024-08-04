@@ -10,48 +10,62 @@ console.log(cosmoShipsAbi);
 const useMintService = () => {
   const { signer, account, networkChainId } = useWalletStore();
 
-  const mintTokens = async () => {
+  const mintTokens = async (numberOfShips: number) => {
     if (!signer || !account || !networkChainId) {
       alert("Wallet not connected or missing required information");
       return;
     }
+
     const contract = new ethers.Contract(
       config.contractAddress,
       cosmoShipsAbi,
       signer,
     );
 
-    const tokenId = parseInt(await contract.getCurrentTokenIdToMint());
-
-    const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
-    if (!tokenInfo) {
-      throw new Error("Token data not found");
-    }
-
-    const { value, proof } = tokenInfo;
-
     try {
-      const tx = await contract.mint(value, proof, {
-        value: config.mintPrice,
+      const startTokenId = await contract.getCurrentTokenIdToMint();
+      const attributes: number[] = [];
+      const proofs: string[][] = [];
+
+      for (let i = 0; i < numberOfShips; i++) {
+        const tokenId = Number(startTokenId) + i;
+
+        const tokenInfo = tokenData.find(
+          (token) => token.tokenId === tokenId,
+        );
+
+        if (!tokenInfo) {
+          throw new Error(
+            `Token data not found for tokenId: ${tokenId.toString()}`,
+          );
+        }
+
+        attributes.push(tokenInfo.value);
+        proofs.push(tokenInfo.proof);
+      }
+
+      const totalPrice = BigInt(config.mintPrice) * BigInt(numberOfShips);
+
+      const tx = await contract.batchMint(attributes, proofs, numberOfShips, {
+        value: totalPrice,
       });
+
       await tx.wait();
-      alert("Mint successful!");
+      alert(`Successfully minted ${numberOfShips} ship(s)!`);
     } catch (error) {
+      let errorMessage = "Unknown error";
       if (error instanceof Error) {
-        alert(`Mint failed: ${error.message}`);
+        errorMessage = error.message;
       } else if (
         typeof error === "object" &&
         error !== null &&
         "message" in error
       ) {
-        alert(`Mint failed: ${(error as { message: string }).message}`);
-      } else {
-        alert("Mint failed for an unknown reason");
+        errorMessage = (error as { message: string }).message;
       }
 
-      if (typeof error === "object" && error !== null) {
-        console.log("Error details:", JSON.stringify(error, null, 2));
-      }
+      alert(`Failed to mint ships: ${errorMessage}`);
+      console.error("Mint error details:", JSON.stringify(error, null, 2));
     }
   };
 
