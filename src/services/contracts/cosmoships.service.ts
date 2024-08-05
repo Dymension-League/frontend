@@ -5,7 +5,6 @@ import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7
 import config from "../../config";
 
 const cosmoShipsAbi = CosmoShips!.abi;
-console.log(cosmoShipsAbi);
 
 const useMintService = () => {
   const { signer, account, networkChainId } = useWalletStore();
@@ -23,16 +22,14 @@ const useMintService = () => {
     );
 
     try {
-      const startTokenId = await contract.getCurrentTokenIdToMint();
+      const startTokenId = await contract.nextTokenIdToMint();
       const attributes: number[] = [];
       const proofs: string[][] = [];
 
       for (let i = 0; i < numberOfShips; i++) {
         const tokenId = Number(startTokenId) + i;
 
-        const tokenInfo = tokenData.find(
-          (token) => token.tokenId === tokenId,
-        );
+        const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
 
         if (!tokenInfo) {
           throw new Error(
