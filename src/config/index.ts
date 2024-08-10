@@ -22,7 +22,6 @@ if (process.env.NODE_ENV === "development") {
     mintPrice: ethers.parseEther(process.env.REACT_APP_MINT_PRICE || "0"),
   };
 }
-console.log(config)
 
 export default config;
 
