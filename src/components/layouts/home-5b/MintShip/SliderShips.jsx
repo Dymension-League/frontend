@@ -14,13 +14,11 @@ const SliderShips = () => {
         const loadImages = async () => {
             const urls = spaceshipsData.map((spaceship) => spaceship.img);
             const cachedImages = await imageCacheService.loadImages(urls);
-            console.log('CACHEDIMAGEEEEEEEEEEEEEEEES', cachedImages);
             setLoadedImages(cachedImages);
         };
 
         loadImages();
     }, []);
-    console.log('Loadeeeeeeeeed Images:', loadedImages);
 
     const subtitle = 'Dymension League Marketplace';
     const title = 'Mint, Trade, and Command Your Fleet of Extraordinary Space Vessels';

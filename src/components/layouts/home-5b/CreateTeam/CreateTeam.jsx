@@ -43,8 +43,7 @@ const CreateTeam = () => {
         } else if (selectedSpaceships.length < 3) {
             setNotification('Please select at least 3 spaceships.');
         } else {
-            setNotification('Team created successfully!');
-            console.log('Team Created:', { teamName, selectedSpaceships: selectedSpaceships.map(item => item.name) });
+            setNotification('Team created successfully!', { teamName, selectedSpaceships: selectedSpaceships.map(item => item.name) });
             setTeamName('');
             setSelectedSpaceships([]);
             setTimeout(() => setNotification(''), 3000);

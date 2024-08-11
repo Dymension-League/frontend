@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-console.log(process.env)
 
 let config = {
   networkId: BigInt(Number(process.env.REACT_APP_NETWORK_ID)),

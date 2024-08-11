@@ -12,6 +12,7 @@ import '../styles/Home05b.css';
 const MintShip: React.FC = () => {
     const [loadedImages, setLoadedImages] = useState<string[]>([]);
     const [shipId, setShipId] = useState<string>('');
+    const [numberOfShips, setNumberOfShips] = useState<number>(1);
     const [notification, setNotification] = useState<string>('');
     const [notificationType, setNotificationType] = useState<'success' | 'error'>('success');
     const [mintedShips, setMintedShips] = useState<string[]>([]);
@@ -44,7 +45,7 @@ const MintShip: React.FC = () => {
             notify('This spaceship ID is already minted.', 'error');
         } else {
             try {
-                await mintTokens(Number(shipId), notify);
+                await mintTokens(Number(shipId), numberOfShips, notify);
                 setMintedShips([...mintedShips, shipId]);
                 setShipId('');
             } catch (error: any) {

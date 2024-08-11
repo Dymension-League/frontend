@@ -4,12 +4,10 @@ class ImageCacheService {
     }
 
     getCachedImages() {
-        console.log('Getting cached images...');
         const cachedData = localStorage.getItem(this.cacheKey);
         if (cachedData) {
             return JSON.parse(cachedData);
         }
-        console.log('No cached images found.');
         return {};
     }
 
@@ -37,10 +35,8 @@ class ImageCacheService {
     }
 
     async loadImages(urls) {
-        console.log('Loading images:', urls);
         const imagePromises = urls.map(url => this.loadImage(url));
         const images = await Promise.all(imagePromises);
-        console.log('All images loaded:', images);
         return images;
     }
 }
