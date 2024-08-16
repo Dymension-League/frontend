@@ -45,7 +45,7 @@ const MintShip: React.FC = () => {
             notify('This spaceship ID is already minted.', 'error');
         } else {
             try {
-                await mintTokens(Number(shipId), numberOfShips, notify);
+                // await mintTokens(Number(shipId), numberOfShips);
                 setMintedShips([...mintedShips, shipId]);
                 setShipId('');
             } catch (error: any) {

@@ -40,66 +40,67 @@ const useMintService = () => {
     return await contract.mintPrice();
   };
 
-  const mintTokens = async (tokenId: number, numberOfShips: number, notify: (message: string, type: 'success' | 'error') => void) => {
+  const mintTokens = async (numberOfShips: number, notify: (message: string, type: 'success' | 'error') => void) => {
     if (!signer || !account || !networkChainId) {
       notify("Wallet not connected or missing required information", 'error');
       return;
     }
 
-    const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
-    if (!tokenInfo) {
-      notify("Token data not found", 'error');
-      return;
-    }
+    // const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
+    // if (!tokenInfo) {
+    //   notify("Token data not found", 'error');
+    //   return;
+    // }
 
-    const { value, proof } = tokenInfo;
+    // const { value, proof } = tokenInfo;
 
     const contract = getContract(signer);
 
     try {
       // TODO: Revert to batch minting
-      // const startTokenId = await contract.nextTokenIdToMint();
-      // const attributes: number[] = [];
-      // const proofs: string[][] = [];
-      //
-      // for (let i = 0; i < numberOfShips; i++) {
-      //   const tokenId = Number(startTokenId) + i;
-      //
-      //   const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
-      //
-      //   if (!tokenInfo) {
-      //     throw new Error(
-      //         `Token data not found for tokenId: ${tokenId.toString()}`,
-      //     );
-      //   }
-      //
-      //   attributes.push(tokenInfo.value);
-      //   proofs.push(tokenInfo.proof);
-      // }
-      //
-      // const totalPrice = BigInt(config.mintPrice) * BigInt(numberOfShips);
-      //
-      // const tx = await contract.batchMint(attributes, proofs, numberOfShips, {
-      //   value: totalPrice,
-      // });
-      // Check if token is already minted
-      if (await isTokenMinted(tokenId)) {
-        notify("This token ID has already been minted.", 'error');
-        return;
+      const startTokenId = await contract.nextTokenIdToMint();
+      console.log('startTokenId', Number(startTokenId))
+
+      const attributes: number[] = [];
+      const proofs: string[][] = [];
+
+      for (let i = 0; i < numberOfShips; i++) {
+        const tokenId = Number(startTokenId) + i;
+
+        const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
+
+        if (!tokenInfo) {
+          throw new Error(
+              `Token data not found for tokenId: ${tokenId.toString()}`,
+          );
+        }
+
+        attributes.push(tokenInfo.value);
+        proofs.push(tokenInfo.proof);
       }
+      const totalPrice = BigInt(config.mintPrice) * BigInt(numberOfShips);
+
+      const tx = await contract.batchMint(attributes, proofs, numberOfShips, {
+        value: totalPrice,
+      });
+      // // Check if token is already minted
+      // if (await isTokenMinted(tokenId)) {
+      //   notify("This token ID has already been minted.", 'error');
+      //   return;
+      // }
 
       // Verify mint price
-      const contractMintPrice = await getContractMintPrice();
-      if (contractMintPrice.toString() !== config.mintPrice.toString()) {
-        notify(`Incorrect mint price. Expected: ${ethers.formatEther(contractMintPrice)} ETH, Actual: ${ethers.formatEther(config.mintPrice)} ETH`, 'error');
-        return;
-      }
+      // const contractMintPrice = await getContractMintPrice();
+      // if (contractMintPrice.toString() !== config.mintPrice.toString()) {
+      //   notify(`Incorrect mint price. Expected: ${ethers.formatEther(contractMintPrice)} ETH, Actual: ${ethers.formatEther(config.mintPrice)} ETH`, 'error');
+      //   return;
+      // }
 
-      const tx = await contract.mint(tokenId, value, proof, {
-        value: config.mintPrice,
-      });
+      // const tx = await contract.mint(tokenId, value, proof, {
+      //   value: config.mintPrice,
+      // });
       await tx.wait();
-      notify("Mint successful!", 'success');
+      // notify("Mint successful!", 'success');
     } catch (error: any) {
       console.error("Mint error:", error);
       if (error.error && error.error.data && error.error.data.message) {
