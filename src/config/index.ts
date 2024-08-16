@@ -6,7 +6,7 @@ let config = {
   currencyName: process.env.REACT_APP_CURRENCY_NAME || "",
   currencySymbol: process.env.REACT_APP_CURRENCY_SYMBOL || "",
   rpcUrl: process.env.REACT_APP_RPC_URL || "",
-  contractAddress: process.env.REACT_APP_CONTRACT_ADDRESS || "",
+  contractAddress: process.env.REACT_APP_COSMOSHIPS_ADDRESS || "",
   mintPrice: ethers.parseEther(process.env.REACT_APP_MINT_PRICE || "0"),
 };
 
