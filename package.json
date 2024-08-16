@@ -29,7 +29,7 @@
     "zustand": "^4.5.4"
   },
   "scripts": {
-    "prestart": "node scripts/copyContracts.js",
+    "copy-contract": "node scripts/copyContracts.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
