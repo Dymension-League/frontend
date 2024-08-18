@@ -30,14 +30,25 @@ import NoResult from "./NoResult";
 import FAQ from "./FAQ";
 import Contact01 from "./Contact01";
 import Contact02 from "./Contact02";
+import Home05b from "./Home05b";
+import CreateTeam from "../components/layouts/home-5b/CreateTeam/CreateTeam";
+import CreateTeamPage from "./CreateTeam/CreateTeamPage";
+import MintShipPage from "./MintShip/MintShipPage";
+import MintShipsPage from "./MintShipsPage"
+import HomePage from "./Home/HomePage";
 
 
 const routes = [
-  { path: '/', component: <Home01 />},
+  // { path: '/', component: <Home01 />},
+  { path: '/', component: <HomePage />},
   { path: '/home-02', component: <Home02 />},
   { path: '/home-03', component: <Home03 />},
   { path: '/home-04', component: <Home04 />},
   { path: '/home-05', component: <Home05 />},
+  { path: '/home-05b', component: <Home05b />},
+  { path: '/create-team', component: <CreateTeamPage />},
+  { path: '/mint-ship', component: <MintShipPage />},
+  { path: '/mint-ships', component: <MintShipsPage />},
   { path: '/home-06', component: <Home06 />},
   { path: '/home-07', component: <Home07 />},
   { path: '/home-08', component: <Home08 />},

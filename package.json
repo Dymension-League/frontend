@@ -23,13 +23,13 @@
     "react-router-dom": "^6.25.1",
     "react-scripts": "5.0.1",
     "react-tabs": "^6.0.0",
-    "swiper": "^11.1.7",
+    "swiper": "^7.4.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "zustand": "^4.5.4"
   },
   "scripts": {
-    "prestart": "node scripts/copyContracts.js",
+    "copy-contract": "node scripts/copyContracts.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
