@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/scss';
@@ -10,33 +10,26 @@ import useMintService from "../../../../services/contracts/cosmoships.service";
 import '../styles/Home05b.css';
 
 const MintShip: React.FC = () => {
-    const [loadedImages, setLoadedImages] = useState<string[]>([]);
     const [shipId, setShipId] = useState<string>('');
-    const [numberOfShips, setNumberOfShips] = useState<number>(1);
     const [notification, setNotification] = useState<string>('');
     const [notificationType, setNotificationType] = useState<'success' | 'error'>('success');
     const [mintedShips, setMintedShips] = useState<string[]>([]);
     const { mintTokens } = useMintService();
 
-    useEffect(() => {
-        const loadImages = async () => {
-            const urls = spaceshipsData.map((spaceship) => spaceship.img);
-            const cachedImages = await imageCacheService.loadImages(urls);
-            setLoadedImages(cachedImages);
-        };
-
-        loadImages();
+    const handleImageLoad = useCallback((url: string, imageElement: HTMLImageElement) => {
+        imageCacheService.lazyLoadImage(url, imageElement);
     }, []);
-
-    const subtitle = 'Dymension League Marketplace';
-    const title = 'Mint, Trade, and Command Your Fleet of Extraordinary Space Vessels';
-    const description = 'Join the Dymension League, where you can mint unique starships, form alliances, and conquer the cosmos. Your adventure starts here!';
 
     const notify = (message: string, type: 'success' | 'error') => {
         setNotification(message);
         setNotificationType(type);
         setTimeout(() => setNotification(''), 3000);
     };
+
+    const subtitle = 'Dymension League Marketplace';
+    const title = 'Mint, Trade, and Command Your Fleet of Extraordinary Space Vessels';
+    const description = 'Join the Dymension League, where you can mint unique starships, form alliances, and conquer the cosmos. Your adventure starts here!';
+
 
     const handleMintShip = async () => {
         if (!shipId.trim()) {
@@ -45,9 +38,10 @@ const MintShip: React.FC = () => {
             notify('This spaceship ID is already minted.', 'error');
         } else {
             try {
-                // await mintTokens(Number(shipId), numberOfShips);
+                await mintTokens(1, notify);
                 setMintedShips([...mintedShips, shipId]);
                 setShipId('');
+                notify('Ship minted successfully!', 'success');
             } catch (error: any) {
                 const errorMessage = error.message || 'Minting failed for an unknown reason.';
                 notify(`Mint failed: ${errorMessage}`, 'error');
@@ -109,10 +103,15 @@ const MintShip: React.FC = () => {
                         speed={2000}
                         className="slider-ships"
                     >
-                        {loadedImages.map((image, index) => (
+                        {spaceshipsData.map((spaceship, index) => (
                             <SwiperSlide key={index}>
                                 <div>
-                                    <video src={image} autoPlay loop muted />
+                                    <video
+                                        ref={(el) => el && handleImageLoad(spaceship.img, el as unknown as HTMLImageElement)}
+                                        autoPlay
+                                        loop
+                                        muted
+                                    />
                                 </div>
                             </SwiperSlide>
                         ))}

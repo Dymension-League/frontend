@@ -8,7 +8,6 @@ const CreateTeamPage = () => {
     return (
         <div className='home-5'>
             <HeaderLeague />
-            {/*<CreateTeam />*/}
             <CreateTeam />
             <NewFooter />
         </div>
