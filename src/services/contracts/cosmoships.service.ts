@@ -98,6 +98,7 @@ const useMintService = () => {
 
   const getTokenIdsByOwner = async (ownerAddress: string): Promise<number[]> => {
     if (cachedTokenIds[ownerAddress]) {
+      console.log(`Returning cached token IDs for account ${ownerAddress}`);
       return cachedTokenIds[ownerAddress];
     }
 
@@ -110,8 +111,10 @@ const useMintService = () => {
     }
 
     cachedTokenIds[ownerAddress] = tokenIds;
+    // console.log(`Fetched and cached ${tokenIds.length} token IDs for account ${ownerAddress}`);
     return tokenIds;
   };
+
 
   const getTokenMetadata = async (tokenId: number): Promise<any> => {
     const contract = getContract(provider);
@@ -168,11 +171,36 @@ const useMintService = () => {
     }
   };
 
+  // const convertIPFSUrl = (url: string) => {
+  //   // Check if the URL is already in the desired format
+  //   if (url.startsWith('https://ipfs.io/ipfs/')) {
+  //     return url;
+  //   }
+  //   // Extract the IPFS hash and file name
+  //   const ipfsHashPath = url.replace('https://bafybeigmaqzyrrmhp4v2jgm6rnoo3ctzjzwd2xsi63xhfgw3ed4sf4zpmu.ipfs.nftstorage.link/', '');
+  //   return `https://ipfs.io/ipfs/${ipfsHashPath}`;
+  // };
+
   const convertIPFSUrl = (url: string): string => {
-    return url.startsWith('ipfs://') ? url.replace('ipfs://', IPFS_GATEWAY) : url;
+    // If the URL is already in the format we want, return it.
+    if (url.startsWith('https://ipfs.io/ipfs/')) {
+      return url;
+    }
+    // Otherwise, parse the URL and format it correctly.
+    const path = url.split('/').slice(-2).join('/');
+    return `https://ipfs.io/ipfs/${path}`;
   };
 
+
+
+
   const getIPFSTokenMetadata = async (tokenId: number): Promise<any> => {
+    const cacheKey = `metadata-${tokenId}`;
+    const cachedMetadata = await imageCacheService.getCachedImage(cacheKey);
+    if (cachedMetadata) {
+      return JSON.parse(cachedMetadata);
+    }
+
     try {
       const url = `${IPFS_GATEWAY}${tokenId}`;
       const response = await fetch(url);
@@ -182,9 +210,9 @@ const useMintService = () => {
       }
 
       const metadata = await response.json();
-      const imgUrl = convertIPFSUrl(metadata.img || '');
+      const imgUrl = convertIPFSUrl(metadata.image || '');
 
-      return {
+      const tokenMetadata = {
         id: tokenId,
         name: metadata.name || `CosmoShip #${tokenId}`,
         img: imgUrl,
@@ -197,6 +225,11 @@ const useMintService = () => {
         speed: Number(metadata.attributes.find((attr: any) => attr.trait_type === "Speed")?.value) || 0,
         shield: Number(metadata.attributes.find((attr: any) => attr.trait_type === "Shield")?.value) || 0
       };
+
+      // Cache the metadata
+      await imageCacheService.setCachedImage(cacheKey, JSON.stringify(tokenMetadata));
+
+      return tokenMetadata;
     } catch (error) {
       console.error(`Error fetching IPFS metadata for token ID ${tokenId}:`, error);
       throw error;
@@ -223,7 +256,8 @@ const useMintService = () => {
 
   return { mintTokens, getTokenIdsByOwner, setApproveForAll, isTokenMinted, getContractMintPrice, getTokenMetadata,
     getIPFSTokenMetadata,
-    getIPFSTokenMetadataBatch };
+    getIPFSTokenMetadataBatch,
+    convertIPFSUrl};
 };
 
 export default useMintService;

@@ -72,7 +72,7 @@ class ImageCacheService {
             return imageUrl;
         } catch (error) {
             console.error('Error loading image:', error);
-            return url;
+            throw error;
         }
     }
 
@@ -80,14 +80,16 @@ class ImageCacheService {
         const cachedImage = await this.getCachedImage(url);
         if (cachedImage) {
             imageElement.src = cachedImage;
+            return cachedImage;
         } else {
-            const observer = new IntersectionObserver(async (entries) => {
-                if (entries[0].isIntersecting) {
-                    imageElement.src = await this.loadImage(url);
-                    observer.disconnect();
-                }
-            });
-            observer.observe(imageElement);
+            try {
+                const imageUrl = await this.loadImage(url);
+                imageElement.src = imageUrl;
+                return imageUrl;
+            } catch (error) {
+                console.error('Error loading image:', error);
+                throw error;
+            }
         }
     }
 }

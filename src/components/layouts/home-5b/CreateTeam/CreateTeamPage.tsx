@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useMemo, useRef} from 'react';
+import React, {useState, useEffect, useCallback, useMemo, useRef, Fragment} from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
 import 'swiper/scss';
@@ -10,7 +10,7 @@ import imageCacheService from "../../../../services/ImageCacheService";
 import '../styles/Home05b.css';
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import config from "../../../../config";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 interface Notification {
     message: string;
@@ -34,21 +34,20 @@ interface SpaceshipMetadata {
 const CreateTeam: React.FC = () => {
     const { account, signer } = useWalletStore();
     const { createTeam } = useGameLeagueService();
-    const { getTokenIdsByOwner, setApproveForAll, getIPFSTokenMetadataBatch, getIPFSTokenMetadata } = useMintService();
+    const { getTokenIdsByOwner, setApproveForAll, getIPFSTokenMetadata, convertIPFSUrl } = useMintService();
     const [teamName, setTeamName] = useState<string>('');
     const [ownedTokens, setOwnedTokens] = useState<SpaceshipMetadata[]>([]);
     const [selectedTokenIds, setSelectedTokenIds] = useState<number[]>([]);
     const [notification, setNotification] = useState<Notification | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [hasFetchedTokens, setHasFetchedTokens] = useState<boolean>(false);
     const swiperRef = useRef<any>(null);
 
     const fetchOwnedTokenIds = useCallback(async () => {
         if (!account) return [];
         try {
             const tokenIds = await getTokenIdsByOwner(account);
-            console.log(`Fetched ${tokenIds.length} token IDs for account ${account}`);
+            // console.log(`Fetched ${tokenIds.length} token IDs for account ${account}`);
             return tokenIds;
         } catch (error) {
             console.error('Error fetching owned token IDs:', error);
@@ -60,37 +59,62 @@ const CreateTeam: React.FC = () => {
     const ownedTokenIds = useMemo(() => fetchOwnedTokenIds(), [fetchOwnedTokenIds]);
 
     useEffect(() => {
+        console.log("useEffect is running");
+
         const fetchOwnedTokens = async () => {
-            if (account) {
-                setIsLoading(true);
-                try {
-                    const tokenIds = await getTokenIdsByOwner(account);
-                    console.log(`Fetched ${tokenIds.length} token IDs for account ${account}`);
-                    const tokensWithMetadata = await Promise.all(
-                        tokenIds.map(async (tokenId) => {
-                            try {
-                                return await getIPFSTokenMetadata(tokenId);
-                            } catch (error) {
-                                console.error(`Error fetching metadata for token ${tokenId}:`, error);
-                                return null;
-                            }
-                        })
-                    );
-                    setOwnedTokens(tokensWithMetadata.filter((token): token is SpaceshipMetadata => token !== null));
-                } catch (error) {
-                    console.error('Error fetching owned tokens:', error);
-                    notify('Failed to fetch owned spaceships. Please check your connection and try again.', 'error');
-                } finally {
-                    setIsLoading(false);
-                }
+            if (!account) return;
+
+            // setIsLoading(true);
+            try {
+                const tokenIds = await getTokenIdsByOwner(account);
+                console.log(`Fetched ${tokenIds.length} token IDs for account ${account}`);
+
+                const tokensWithMetadata = await Promise.all(
+                    tokenIds.map(async (tokenId) => {
+                        try {
+                            return await getIPFSTokenMetadata(tokenId);
+                        } catch (error) {
+                            console.error(`Error fetching metadata for token ${tokenId}:`, error);
+                            return null;
+                        }
+                    })
+                );
+
+                setOwnedTokens(tokensWithMetadata.filter((token): token is SpaceshipMetadata => token !== null));
+            } catch (error) {
+                console.error('Error fetching owned tokens:', error);
+                notify('Failed to fetch owned spaceships. Please check your connection and try again.', 'error');
+            } finally {
+                setIsLoading(false);
             }
         };
+
         fetchOwnedTokens();
     }, [account, getTokenIdsByOwner, getIPFSTokenMetadata]);
 
-    const handleImageLoad = useCallback((token: SpaceshipMetadata, imageElement: HTMLImageElement) => {
-        imageCacheService.lazyLoadImage(token.img, imageElement);
+    useEffect(() => {
+        console.log('Rendering component with ownedTokens:', ownedTokens);
+    }, [ownedTokens]);
+
+    const handleImageLoad = useCallback(async (token: SpaceshipMetadata, mediaElement: HTMLImageElement | HTMLVideoElement) => {
+        const convertedUrl = convertIPFSUrl(token.img);
+        console.log('Final URL:', convertedUrl);
+
+        try {
+            const cachedMedia = await imageCacheService.lazyLoadImage(convertedUrl, mediaElement);
+            if (cachedMedia) {
+                mediaElement.src = cachedMedia as string;
+            } else {
+                mediaElement.src = convertedUrl;
+                console.error(`Media not loaded from cache: ${convertedUrl}`);
+            }
+        } catch (error) {
+            console.error('Error loading media:', error);
+            mediaElement.src = convertedUrl;  // Fallback to the converted URL on error
+        }
     }, []);
+
+
 
     const isCreateTeamEnabled = teamName.trim() !== '' && selectedTokenIds.length === 3;
 
@@ -141,16 +165,17 @@ const CreateTeam: React.FC = () => {
         }
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
+    // if (isLoading) {
+    //     return <div>Loading...</div>;
+    // }
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
     return (
-        <section className="tf-section live-auctions">
+        <Fragment>
+            <section className="tf-section live-auctions">
             <div className="themesflat-container">
                 <div className="row">
                     <div className="col-md-12">
@@ -169,13 +194,13 @@ const CreateTeam: React.FC = () => {
                             modules={[Navigation, Pagination, Scrollbar, A11y]}
                             spaceBetween={30}
                             breakpoints={{
-                                0: {slidesPerView: 1},
-                                767: {slidesPerView: 2},
-                                991: {slidesPerView: 3},
+                                0: { slidesPerView: 1 },
+                                767: { slidesPerView: 2 },
+                                991: { slidesPerView: 3 },
                             }}
                             navigation
-                            pagination={{clickable: true}}
-                            scrollbar={{draggable: true}}
+                            pagination={{ clickable: true }}
+                            scrollbar={{ draggable: true }}
                         >
                             {ownedTokens.map((token) => (
                                 <SwiperSlide key={token.id}>
@@ -188,10 +213,9 @@ const CreateTeam: React.FC = () => {
                                                 <div className="slider-item">
                                                     <div className="sc-card-product">
                                                         <div className="card-media">
-                                                            <img
+                                                            <video
                                                                 ref={(el) => el && handleImageLoad(token, el)}
-                                                                alt={token.name}
-                                                                src={token.img} // Set initial src to original URL
+                                                                src={token.img}
                                                                 onLoad={() => {
                                                                     if (swiperRef.current) {
                                                                         swiperRef.current.update();
@@ -267,7 +291,9 @@ const CreateTeam: React.FC = () => {
                 </div>
             </div>
         </section>
+        </Fragment>
     );
+
 }
 
 export default CreateTeam;
