@@ -10,7 +10,6 @@ import imageCacheService from "../../../../services/ImageCacheService";
 import '../styles/Home05b.css';
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import config from "../../../../config";
-import {Link} from "react-router-dom";
 
 interface Notification {
     message: string;
@@ -39,9 +38,9 @@ const CreateTeam: React.FC = () => {
     const [ownedTokens, setOwnedTokens] = useState<SpaceshipMetadata[]>([]);
     const [selectedTokenIds, setSelectedTokenIds] = useState<number[]>([]);
     const [notification, setNotification] = useState<Notification | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const swiperRef = useRef<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchOwnedTokenIds = useCallback(async () => {
         if (!account) return [];
@@ -56,41 +55,36 @@ const CreateTeam: React.FC = () => {
         }
     }, [account, getTokenIdsByOwner]);
 
+    const fetchOwnedTokens = useCallback(async () => {
+        if (!account) return;
+        // setIsLoading(true);
+
+        try {
+            const tokenIds = await getTokenIdsByOwner(account);
+            const tokensWithMetadata = await Promise.all(
+                tokenIds.map(async (tokenId) => {
+                    try {
+                        return await getIPFSTokenMetadata(tokenId);
+                    } catch (error) {
+                        console.error(`Error fetching metadata for token ${tokenId}:`, error);
+                        return null;
+                    }
+                })
+            );
+
+            setOwnedTokens(tokensWithMetadata.filter((token) => token !== null));
+        } catch (error) {
+            console.error('Error fetching owned tokens:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [account, getTokenIdsByOwner, getIPFSTokenMetadata]);
+
     const ownedTokenIds = useMemo(() => fetchOwnedTokenIds(), [fetchOwnedTokenIds]);
 
     useEffect(() => {
-        console.log("useEffect is running");
-
-        const fetchOwnedTokens = async () => {
-            if (!account) return;
-
-            // setIsLoading(true);
-            try {
-                const tokenIds = await getTokenIdsByOwner(account);
-                console.log(`Fetched ${tokenIds.length} token IDs for account ${account}`);
-
-                const tokensWithMetadata = await Promise.all(
-                    tokenIds.map(async (tokenId) => {
-                        try {
-                            return await getIPFSTokenMetadata(tokenId);
-                        } catch (error) {
-                            console.error(`Error fetching metadata for token ${tokenId}:`, error);
-                            return null;
-                        }
-                    })
-                );
-
-                setOwnedTokens(tokensWithMetadata.filter((token): token is SpaceshipMetadata => token !== null));
-            } catch (error) {
-                console.error('Error fetching owned tokens:', error);
-                notify('Failed to fetch owned spaceships. Please check your connection and try again.', 'error');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchOwnedTokens();
-    }, [account, getTokenIdsByOwner, getIPFSTokenMetadata]);
+    }, [fetchOwnedTokens]);
 
     useEffect(() => {
         console.log('Rendering component with ownedTokens:', ownedTokens);
@@ -110,7 +104,7 @@ const CreateTeam: React.FC = () => {
             }
         } catch (error) {
             console.error('Error loading media:', error);
-            mediaElement.src = convertedUrl;  // Fallback to the converted URL on error
+            mediaElement.src = convertedUrl;
         }
     }, []);
 
@@ -165,12 +159,12 @@ const CreateTeam: React.FC = () => {
         }
     };
 
-    // if (isLoading) {
-    //     return <div>Loading...</div>;
-    // }
-
     if (error) {
         return <div>Error: {error}</div>;
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div>;
     }
 
     return (

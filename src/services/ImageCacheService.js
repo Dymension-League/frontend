@@ -1,4 +1,5 @@
 import { openDB } from 'idb';
+import { convertIPFSUrl } from './ipfsUtils';
 
 class ImageCacheService {
     constructor() {
@@ -15,7 +16,8 @@ class ImageCacheService {
         const db = await this.dbPromise;
         const tx = db.transaction('images', 'readonly');
         const store = tx.objectStore('images');
-        const cachedImage = await store.get(url);
+        const cacheKey = convertIPFSUrl(url);  // Ensure the key is standardized
+        const cachedImage = await store.get(cacheKey);
 
         if (cachedImage && Date.now() - cachedImage.timestamp < this.cacheExpiration) {
             return cachedImage.data;
@@ -28,9 +30,11 @@ class ImageCacheService {
         const db = await this.dbPromise;
         const tx = db.transaction('images', 'readwrite');
         const store = tx.objectStore('images');
-        await store.put({ data, timestamp: Date.now() }, url);
+        const cacheKey = convertIPFSUrl(url);
+        await store.put({ data, timestamp: Date.now() }, cacheKey);
         await this.pruneCache();
     }
+
 
     async pruneCache() {
         const db = await this.dbPromise;
@@ -92,6 +96,7 @@ class ImageCacheService {
             }
         }
     }
+
 }
 
 const imageCacheService = new ImageCacheService();

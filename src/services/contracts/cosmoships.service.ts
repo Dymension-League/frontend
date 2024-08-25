@@ -111,7 +111,6 @@ const useMintService = () => {
     }
 
     cachedTokenIds[ownerAddress] = tokenIds;
-    // console.log(`Fetched and cached ${tokenIds.length} token IDs for account ${ownerAddress}`);
     return tokenIds;
   };
 
@@ -171,18 +170,15 @@ const useMintService = () => {
     }
   };
 
-  // const convertIPFSUrl = (url: string) => {
-  //   // Check if the URL is already in the desired format
+  // const convertIPFSUrl = (url: string): string => {
   //   if (url.startsWith('https://ipfs.io/ipfs/')) {
   //     return url;
   //   }
-  //   // Extract the IPFS hash and file name
-  //   const ipfsHashPath = url.replace('https://bafybeigmaqzyrrmhp4v2jgm6rnoo3ctzjzwd2xsi63xhfgw3ed4sf4zpmu.ipfs.nftstorage.link/', '');
-  //   return `https://ipfs.io/ipfs/${ipfsHashPath}`;
+  //   const path = url.split('/').slice(-2).join('/');
+  //   return `https://ipfs.io/ipfs/${path}`;
   // };
 
   const convertIPFSUrl = (url: string): string => {
-    // If the URL is already in the format we want, return it.
     if (url.startsWith('https://ipfs.io/ipfs/')) {
       return url;
     }
@@ -190,7 +186,6 @@ const useMintService = () => {
     const path = url.split('/').slice(-2).join('/');
     return `https://ipfs.io/ipfs/${path}`;
   };
-
 
 
 
@@ -254,10 +249,17 @@ const useMintService = () => {
     }
   };
 
-  return { mintTokens, getTokenIdsByOwner, setApproveForAll, isTokenMinted, getContractMintPrice, getTokenMetadata,
+  return {
+    mintTokens,
+    getTokenIdsByOwner,
+    setApproveForAll,
+    isTokenMinted,
+    getContractMintPrice,
+    getTokenMetadata,
     getIPFSTokenMetadata,
     getIPFSTokenMetadataBatch,
-    convertIPFSUrl};
+    convertIPFSUrl
+  };
 };
 
 export default useMintService;
