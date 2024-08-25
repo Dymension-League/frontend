@@ -38,7 +38,7 @@ const SliderShips = () => {
                             <a href="/create-team" className="sc-button header-slider style style-1 rocket fl-button pri-1">
                                 <span>Create Team</span>
                             </a>
-                            <a href="/mint-ships" className="sc-button header-slider style style-1 note fl-button pri-1">
+                            <a href="/mint-ship" className="sc-button header-slider style style-1 note fl-button pri-1">
                                 <span>Mint Ships</span>
                             </a>
                         </div>

@@ -63,7 +63,7 @@ const CreateTeam = () => {
                         <div className="breadcrumbs style2">
                             <ul>
                                 <li><Link to="/">Home</Link></li>
-                                <li><Link to="/mint-ships">Mint</Link></li>
+                                <li><Link to="/mint-ship">Mint</Link></li>
                                 <li>Create your Team</li>
                             </ul>
                         </div>

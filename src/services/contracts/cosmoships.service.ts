@@ -178,4 +178,3 @@ const useMintService = () => {
 };
 
 export default useMintService;
-
