@@ -50,7 +50,6 @@ const routes = [
   { path: '/create-team', component: <CreateTeamPage />},
   { path: '/new-team', component: <NewTeam />},
   { path: '/mint-ship', component: <MintShipPage />},
-  { path: '/mint-ships', component: <MintShipsPage />},
   { path: '/home-06', component: <Home06 />},
   { path: '/home-07', component: <Home07 />},
   { path: '/home-08', component: <Home08 />},

@@ -1,8 +1,8 @@
-import {ethers} from "ethers";
-import {useWalletStore} from "../../store/useWalletStore";
+import { ethers } from "ethers";
+import { useWalletStore } from "../../store/useWalletStore";
+// import cosmoShipsArtifact from "../../artifacts/contracts/LocalCosmoShips.json";
 import cosmoShipsArtifact from "../../artifacts/contracts/CosmoShips.json";
-import tokenData
-  from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
+import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
 import config from "../../config";
 import imageCacheService from "../ImageCacheService";
 

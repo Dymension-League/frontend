@@ -6,7 +6,7 @@ import logofooter from '../../assets/images/logo/logo2.png';
 
 const NewFooter = () => {
     const menus = [
-        { name: 'Mint', links: '/mint-ships' },
+        { name: 'Mint', links: '/mint-ship' },
         { name: 'Create Team', links: '/create-team' },
         { name: 'Enroll Team', links: '/enroll-team' },
         { name: 'Governance Simulator', links: '/governance-simulator' },
