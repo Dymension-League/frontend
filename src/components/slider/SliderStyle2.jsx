@@ -9,7 +9,6 @@ import img2 from "../../assets/images/box-item/item-h5.2.png";
 import img3 from "../../assets/images/box-item/item-h5.3.png";
 import useMintService from "../../services/contracts/cosmoships.service";
 import { useWalletStore } from "../../store/useWalletStore";
-import MintSection from "../header/MintSection";
 
 const SliderStyle2 = () => {
   const subtitle = "NFT MARKETPLACE";
@@ -50,13 +49,6 @@ const SliderStyle2 = () => {
                 Enter the Token ID of the Cosmo Ship you want to mint
               </h5>
             </div>
-            <MintSection
-              numberOfShips={numberOfShips}
-              setNumberOfShips={setNumberOfShips}
-              handleMint={handleMint}
-              isOnCorrectNetwork={isOnCorrectNetwork}
-              account={account}
-            />
           </div>
 
           <Swiper

@@ -4,7 +4,7 @@ const headerMenus = [
     {
         id: 1,
         name: 'Mint',
-        links: '/mint-ships'
+        links: '/mint-ship'
     },
     {
         id: 2,
