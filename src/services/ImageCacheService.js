@@ -1,5 +1,5 @@
-import { openDB } from 'idb';
-import { convertIPFSUrl } from './ipfsUtils';
+import {openDB} from 'idb';
+import {convertIPFSUrl} from './ipfsUtils';
 
 class ImageCacheService {
     constructor() {
@@ -78,6 +78,11 @@ class ImageCacheService {
             console.error('Error loading image:', error);
             throw error;
         }
+    }
+
+    async loadImages(urls) {
+        const imagePromises = urls.map(url => this.loadImage(url));
+        return await Promise.all(imagePromises);
     }
 
     async lazyLoadImage(url, imageElement) {
