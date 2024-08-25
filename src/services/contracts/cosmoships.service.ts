@@ -1,15 +1,17 @@
 import { ethers } from "ethers";
 import { useWalletStore } from "../../store/useWalletStore";
-import cosmoShipsArtifact from "../../artifacts/contracts/CosmoShips.json";
+import { CosmoShips } from "../../artifacts/contracts/contracts";
 import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
 import config from "../../config";
 
-const cosmoShipsAbi = cosmoShipsArtifact.abi;
+const cosmoShipsAbi = CosmoShips!.abi;
 
 const useMintService = () => {
   const { signer, account, networkChainId, provider } = useWalletStore();
 
-  const getContract = (signerOrProvider?: ethers.Signer | ethers.Provider | null) => {
+  const getContract = (
+    signerOrProvider?: ethers.Signer | ethers.Provider | null,
+  ) => {
     let contractSigner: ethers.Signer | ethers.Provider;
 
     if (signerOrProvider) {
@@ -22,7 +24,11 @@ const useMintService = () => {
       throw new Error("Wallet not connected: No signer or provider available");
     }
 
-    return new ethers.Contract(config.mintAddress, cosmoShipsAbi, contractSigner);
+    return new ethers.Contract(
+      config.mintAddress,
+      cosmoShipsAbi,
+      contractSigner,
+    );
   };
 
   const isTokenMinted = async (tokenId: number): Promise<boolean> => {
@@ -40,26 +46,18 @@ const useMintService = () => {
     return await contract.mintPrice();
   };
 
-  const mintTokens = async (numberOfShips: number, notify: (message: string, type: 'success' | 'error') => void) => {
+  const mintTokens = async (
+    numberOfShips: number,
+    notify: (message: string, type: "success" | "error") => void,
+  ) => {
     if (!signer || !account || !networkChainId) {
-      notify("Wallet not connected or missing required information", 'error');
+      notify("Wallet not connected or missing required information", "error");
       return;
     }
-
-    // const tokenInfo = tokenData.find((token) => token.tokenId === tokenId);
-    // if (!tokenInfo) {
-    //   notify("Token data not found", 'error');
-    //   return;
-    // }
-
-    // const { value, proof } = tokenInfo;
-
     const contract = getContract(signer);
 
     try {
-      // TODO: Revert to batch minting
       const startTokenId = await contract.nextTokenIdToMint();
-      console.log('startTokenId', Number(startTokenId))
 
       const attributes: number[] = [];
       const proofs: string[][] = [];
@@ -71,7 +69,7 @@ const useMintService = () => {
 
         if (!tokenInfo) {
           throw new Error(
-              `Token data not found for tokenId: ${tokenId.toString()}`,
+            `Token data not found for tokenId: ${tokenId.toString()}`,
           );
         }
 
@@ -104,17 +102,19 @@ const useMintService = () => {
     } catch (error: any) {
       console.error("Mint error:", error);
       if (error.error && error.error.data && error.error.data.message) {
-        notify(`Mint failed: ${error.error.data.message}`, 'error');
+        notify(`Mint failed: ${error.error.data.message}`, "error");
       } else if (error.reason) {
-        notify(`Mint failed: ${error.reason}`, 'error');
+        notify(`Mint failed: ${error.reason}`, "error");
       } else {
-        notify(`Mint failed: ${error.message || 'Unknown error'}`, 'error');
+        notify(`Mint failed: ${error.message || "Unknown error"}`, "error");
       }
       console.log("Error details:", JSON.stringify(error, null, 2));
     }
   };
 
-  const getTokenIdsByOwner = async (ownerAddress: string): Promise<number[]> => {
+  const getTokenIdsByOwner = async (
+    ownerAddress: string,
+  ): Promise<number[]> => {
     const contract = getContract(provider);
     const balance = await contract.balanceOf(ownerAddress);
     const tokenIds = [];
@@ -125,36 +125,57 @@ const useMintService = () => {
     return tokenIds;
   };
 
-  const setApproveForAll = async (operator: string, approved: boolean, notify: (message: string, type: 'success' | 'error') => void): Promise<void> => {
+  const setApproveForAll = async (
+    operator: string,
+    approved: boolean,
+    notify: (message: string, type: "success" | "error") => void,
+  ): Promise<void> => {
     if (!signer) {
-      notify("Wallet not connected", 'error');
+      notify("Wallet not connected", "error");
       return;
     }
     const contract = getContract(signer);
     try {
       const tx = await contract.setApprovalForAll(operator, approved);
       await tx.wait();
-      notify("Approval set successfully", 'success');
+      notify("Approval set successfully", "success");
     } catch (error) {
       handleError(error, notify);
     }
   };
 
-  const handleError = (error: any, notify: (message: string, type: 'success' | 'error') => void) => {
+  const handleError = (
+    error: any,
+    notify: (message: string, type: "success" | "error") => void,
+  ) => {
     if (error instanceof Error) {
-      notify(`Operation failed: ${error.message}`, 'error');
-    } else if (typeof error === 'object' && error !== null && 'message' in error) {
-      notify(`Operation failed: ${(error as { message: string }).message}`, 'error');
+      notify(`Operation failed: ${error.message}`, "error");
+    } else if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error
+    ) {
+      notify(
+        `Operation failed: ${(error as { message: string }).message}`,
+        "error",
+      );
     } else {
-      notify("Operation failed for an unknown reason", 'error');
+      notify("Operation failed for an unknown reason", "error");
     }
 
-    if (typeof error === 'object' && error !== null) {
+    if (typeof error === "object" && error !== null) {
       console.log("Error details:", JSON.stringify(error, null, 2));
     }
   };
 
-  return { mintTokens, getTokenIdsByOwner, setApproveForAll, isTokenMinted, getContractMintPrice };
+  return {
+    mintTokens,
+    getTokenIdsByOwner,
+    setApproveForAll,
+    isTokenMinted,
+    getContractMintPrice,
+  };
 };
 
 export default useMintService;
+
