@@ -160,6 +160,14 @@ const PlaceBet: React.FC = () => {
         return;
       }
 
+      if (teamIds.length % 2 !== 0) {
+        notify(
+          "You must have an even number of teams for enrollment.",
+          "error",
+        );
+        return;
+      }
+
       await initializeLeague(0.1);
       notify("League initialized successfully!", "success");
 
