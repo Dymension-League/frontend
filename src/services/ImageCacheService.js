@@ -35,7 +35,6 @@ class ImageCacheService {
         await this.pruneCache();
     }
 
-
     async pruneCache() {
         const db = await this.dbPromise;
         const tx = db.transaction('images', 'readwrite');

@@ -41,6 +41,7 @@ const CreateTeam: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const swiperRef = useRef<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [initiated, setInitiated] = useState<boolean>(false);
 
     const fetchOwnedTokenIds = useCallback(async () => {
         if (!account) return [];
@@ -64,7 +65,7 @@ const CreateTeam: React.FC = () => {
             const tokensWithMetadata = await Promise.all(
                 tokenIds.map(async (tokenId) => {
                     try {
-                        return await getIPFSTokenMetadata(tokenId);
+                        return getIPFSTokenMetadata(tokenId);
                     } catch (error) {
                         console.error(`Error fetching metadata for token ${tokenId}:`, error);
                         return null;
@@ -73,6 +74,7 @@ const CreateTeam: React.FC = () => {
             );
 
             setOwnedTokens(tokensWithMetadata.filter((token) => token !== null));
+            setInitiated(true);
         } catch (error) {
             console.error('Error fetching owned tokens:', error);
         } finally {
@@ -83,7 +85,9 @@ const CreateTeam: React.FC = () => {
     const ownedTokenIds = useMemo(() => fetchOwnedTokenIds(), [fetchOwnedTokenIds]);
 
     useEffect(() => {
-        fetchOwnedTokens();
+        if (!initiated) {
+            fetchOwnedTokens();
+        }
     }, [fetchOwnedTokens]);
 
     useEffect(() => {
