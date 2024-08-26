@@ -19,6 +19,7 @@ let config = {
   mintAddress: validateAddress(process.env.REACT_APP_COSMOSHIPS_ADDRESS, "Mint contract"),
   gameLeagueAddress: validateAddress(process.env.REACT_APP_GAME_LEAGUE_ADDRESS, "Game League contract"),
   mintPrice: ethers.parseEther(process.env.REACT_APP_MINT_PRICE || "0"),
+  ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "",
 };
 //
 // if (process.env.NODE_ENV === "development") {

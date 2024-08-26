@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/scss';
@@ -9,15 +9,12 @@ import imageCacheService from '../../../../services/ImageCacheService';
 
 const SliderShips = () => {
     const [loadedImages, setLoadedImages] = useState([]);
+    const swiperRef = null;
 
-    useEffect(() => {
-        const loadImages = async () => {
-            const urls = spaceshipsData.map((spaceship) => spaceship.img);
-            const cachedImages = await imageCacheService.loadImages(urls);
-            setLoadedImages(cachedImages);
-        };
-
-        loadImages();
+    const handleImageLoad = useCallback((url, videoElement) => {
+        imageCacheService.lazyLoadImage(url, videoElement).then((cachedUrl) => {
+            videoElement.src = cachedUrl;
+        });
     }, []);
 
     const subtitle = 'Dymension League Marketplace';
@@ -60,7 +57,17 @@ const SliderShips = () => {
                         {loadedImages.map((image, index) => (
                             <SwiperSlide key={index}>
                                 <div>
-                                    <video src={image} autoPlay loop muted />
+                                    <video
+                                        ref={(el) => el && handleImageLoad(image, el)}
+                                        autoPlay
+                                        loop
+                                        muted
+                                        onLoadedData={() => {
+                                            if (swiperRef.current) {
+                                                swiperRef.current.update();
+                                            }
+                                        }}
+                                    />
                                 </div>
                             </SwiperSlide>
                         ))}
