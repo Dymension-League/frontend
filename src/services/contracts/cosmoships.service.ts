@@ -3,8 +3,11 @@ import { useWalletStore } from "../../store/useWalletStore";
 import { CosmoShips } from "../../artifacts/contracts/contracts";
 import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
 import config from "../../config";
+import imageCacheService from "../ImageCacheService";
 
 const cosmoShipsAbi = CosmoShips!.abi;
+const IPFS_GATEWAY = config.ipfsGateway;
+const CACHE_EXPIRATION_TIME = 5 * 60 * 1000;
 
 const useMintService = () => {
   const { signer, account, networkChainId, provider } = useWalletStore();
@@ -81,22 +84,6 @@ const useMintService = () => {
       const tx = await contract.batchMint(attributes, proofs, numberOfShips, {
         value: totalPrice,
       });
-      // // Check if token is already minted
-      // if (await isTokenMinted(tokenId)) {
-      //   notify("This token ID has already been minted.", 'error');
-      //   return;
-      // }
-
-      // Verify mint price
-      // const contractMintPrice = await getContractMintPrice();
-      // if (contractMintPrice.toString() !== config.mintPrice.toString()) {
-      //   notify(`Incorrect mint price. Expected: ${ethers.formatEther(contractMintPrice)} ETH, Actual: ${ethers.formatEther(config.mintPrice)} ETH`, 'error');
-      //   return;
-      // }
-
-      // const tx = await contract.mint(tokenId, value, proof, {
-      //   value: config.mintPrice,
-      // });
       await tx.wait();
       // notify("Mint successful!", 'success');
     } catch (error: any) {
@@ -112,9 +99,16 @@ const useMintService = () => {
     }
   };
 
+  let cachedTokenIds: { [address: string]: number[] } = {};
+
   const getTokenIdsByOwner = async (
     ownerAddress: string,
   ): Promise<number[]> => {
+    if (cachedTokenIds[ownerAddress]) {
+      console.log(`Returning cached token IDs for account ${ownerAddress}`);
+      return cachedTokenIds[ownerAddress];
+    }
+
     const contract = getContract(provider);
     const balance = await contract.balanceOf(ownerAddress);
     const tokenIds = [];
@@ -122,7 +116,57 @@ const useMintService = () => {
       const tokenId = await contract.tokenOfOwnerByIndex(ownerAddress, index);
       tokenIds.push(Number(tokenId));
     }
+
+    cachedTokenIds[ownerAddress] = tokenIds;
     return tokenIds;
+  };
+
+  const getTokenMetadata = async (tokenId: number): Promise<any> => {
+    const contract = getContract(provider);
+    try {
+      const tokenURI = await contract.tokenURI(tokenId);
+      console.log(`Token URI for token ID ${tokenId}: ${tokenURI}`);
+
+      // Check if the tokenURI is a valid URL
+      try {
+        new URL(tokenURI);
+      } catch (e) {
+        console.error(`Invalid token URI for token ID ${tokenId}: ${tokenURI}`);
+        throw new Error(`Invalid token URI: ${tokenURI}`);
+      }
+
+      const response = await fetch(tokenURI);
+      const contentType = response.headers.get("content-type");
+
+      console.log(`Response for token ID ${tokenId}:`, {
+        status: response.status,
+        contentType,
+        url: response.url,
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch metadata from URI: ${tokenURI}. Status: ${response.status}`,
+        );
+      }
+
+      if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+      } else {
+        const text = await response.text();
+        console.error(
+          `Unexpected content type: ${contentType}. Response:`,
+          text,
+        );
+        throw new Error(`Unexpected content type: ${contentType}`);
+      }
+    } catch (error) {
+      console.error(
+        `Error fetching token metadata for token ID ${tokenId}:`,
+        error,
+      );
+      throw error;
+    }
   };
 
   const setApproveForAll = async (
@@ -144,6 +188,108 @@ const useMintService = () => {
     }
   };
 
+  // const convertIPFSUrl = (url: string): string => {
+  //   if (url.startsWith('https://ipfs.io/ipfs/')) {
+  //     return url;
+  //   }
+  //   const path = url.split('/').slice(-2).join('/');
+  //   return `https://ipfs.io/ipfs/${path}`;
+  // };
+
+  const convertIPFSUrl = (url: string): string => {
+    if (url.startsWith("https://ipfs.io/ipfs/")) {
+      return url;
+    }
+    // Otherwise, parse the URL and format it correctly.
+    const path = url.split("/").slice(-2).join("/");
+    return `https://ipfs.io/ipfs/${path}`;
+  };
+
+  const getIPFSTokenMetadata = async (tokenId: number): Promise<any> => {
+    const cacheKey = `metadata-${tokenId}`;
+    const cachedMetadata = await imageCacheService.getCachedImage(cacheKey);
+    if (cachedMetadata) {
+      return JSON.parse(cachedMetadata);
+    }
+
+    try {
+      const url = `${IPFS_GATEWAY}${tokenId}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch metadata for token ID ${tokenId}. Status: ${response.status}`,
+        );
+      }
+
+      const metadata = await response.json();
+      const imgUrl = convertIPFSUrl(metadata.image || "");
+
+      const tokenMetadata = {
+        id: tokenId,
+        name: metadata.name || `CosmoShip #${tokenId}`,
+        img: imgUrl,
+        type:
+          metadata.attributes.find((attr: any) => attr.trait_type === "Type")
+            ?.value || "Unknown",
+        model:
+          metadata.attributes.find((attr: any) => attr.trait_type === "Model")
+            ?.value || "Unknown",
+        color:
+          metadata.attributes.find((attr: any) => attr.trait_type === "Color")
+            ?.value || "Unknown",
+        tool:
+          metadata.attributes.find((attr: any) => attr.trait_type === "Tool")
+            ?.value || "Unknown",
+        capacity:
+          Number(
+            metadata.attributes.find(
+              (attr: any) => attr.trait_type === "Capacity",
+            )?.value,
+          ) || 0,
+        attack:
+          Number(
+            metadata.attributes.find(
+              (attr: any) => attr.trait_type === "Attack",
+            )?.value,
+          ) || 0,
+        speed:
+          Number(
+            metadata.attributes.find((attr: any) => attr.trait_type === "Speed")
+              ?.value,
+          ) || 0,
+        shield:
+          Number(
+            metadata.attributes.find(
+              (attr: any) => attr.trait_type === "Shield",
+            )?.value,
+          ) || 0,
+      };
+
+      // Cache the metadata
+      await imageCacheService.setCachedImage(
+        cacheKey,
+        JSON.stringify(tokenMetadata),
+      );
+
+      return tokenMetadata;
+    } catch (error) {
+      console.error(
+        `Error fetching IPFS metadata for token ID ${tokenId}:`,
+        error,
+      );
+      throw error;
+    }
+  };
+
+  const getIPFSTokenMetadataBatch = async (
+    tokenIds: number[],
+  ): Promise<any[]> => {
+    const metadataPromises = tokenIds.map((tokenId) =>
+      getIPFSTokenMetadata(tokenId),
+    );
+    return Promise.all(metadataPromises);
+  };
   const handleError = (
     error: any,
     notify: (message: string, type: "success" | "error") => void,
@@ -174,6 +320,10 @@ const useMintService = () => {
     setApproveForAll,
     isTokenMinted,
     getContractMintPrice,
+    getTokenMetadata,
+    getIPFSTokenMetadata,
+    getIPFSTokenMetadataBatch,
+    convertIPFSUrl,
   };
 };
 

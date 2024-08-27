@@ -37,6 +37,7 @@ import CreateBetPage from "./Bet/BetPage";
 import MintShipPage from "./MintShip/MintShipPage";
 import MintShipsPage from "./MintShipsPage"
 import HomePage from "./Home/HomePage";
+import NewTeam from "../components/layouts/home-5b/CreateTeam/NewTeam";
 
 
 const routes = [
@@ -48,6 +49,7 @@ const routes = [
   { path: '/home-05', component: <Home05 />},
   { path: '/home-05b', component: <Home05b />},
   { path: '/create-team', component: <CreateTeamPage />},
+  { path: '/new-team', component: <NewTeam />},
   { path: '/mint-ship', component: <MintShipPage />},
   { path: '/home-06', component: <Home06 />},
   { path: '/home-07', component: <Home07 />},

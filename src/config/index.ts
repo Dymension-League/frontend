@@ -25,6 +25,7 @@ let config = {
     "Game League contract",
   ),
   mintPrice: ethers.parseEther(process.env.REACT_APP_MINT_PRICE || "0"),
+  ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "",
 };
 
 if (process.env.REACT_APP_LOCAL_COSMOSHIPS_ADDRESS && process.env.REACT_APP_LOCAL_GAMELEAGUE_ADDRESS ) {

@@ -10,12 +10,11 @@ import spaceshipsData from "../../../../assets/space-ships/spaceships";
 import imageCacheService from "../../../../services/ImageCacheService";
 import '../styles/Home05b.css';
 
-const CreateTeam = () => {
-    const [loadedImages, setLoadedImages] = useState([]);
-    const [selectedSpaceships, setSelectedSpaceships] = useState([]);
-    const [teamName, setTeamName] = useState('');
-    const [notification, setNotification] = useState('');
-    const [modalShow, setModalShow] = useState(false);
+    const CreateTeam = () => {
+        const [selectedSpaceships, setSelectedSpaceships] = useState([]);
+        const [teamName, setTeamName] = useState('');
+        const [notification, setNotification] = useState('');
+        const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
         const loadImages = async () => {
@@ -27,28 +26,35 @@ const CreateTeam = () => {
         loadImages();
     }, []);
 
-    const handleSelectSpaceship = (spaceship) => {
-        if (selectedSpaceships.includes(spaceship)) {
-            setSelectedSpaceships(selectedSpaceships.filter(item => item !== spaceship));
-        } else {
-            setSelectedSpaceships([...selectedSpaceships, spaceship]);
-        }
-    };
+        const handleImageLoad = useCallback((url, videoElement) => {
+            imageCacheService.lazyLoadImage(url, videoElement).then((cachedUrl) => {
+                videoElement.src = cachedUrl;
+            });
+        }, []);
 
-    const isCreateTeamEnabled = teamName.trim() !== '' && selectedSpaceships.length >= 3;
+        const handleSelectSpaceship = (spaceship) => {
+            if (selectedSpaceships.includes(spaceship)) {
+                setSelectedSpaceships(selectedSpaceships.filter(item => item !== spaceship));
+            } else {
+                setSelectedSpaceships([...selectedSpaceships, spaceship]);
+            }
+        };
 
-    const handleCreateTeam = () => {
-        if (!teamName.trim()) {
-            setNotification('Please enter a team name.');
-        } else if (selectedSpaceships.length < 3) {
-            setNotification('Please select at least 3 spaceships.');
-        } else {
-            setNotification('Team created successfully!', { teamName, selectedSpaceships: selectedSpaceships.map(item => item.name) });
-            setTeamName('');
-            setSelectedSpaceships([]);
-            setTimeout(() => setNotification(''), 3000);
-        }
-    };
+        const isCreateTeamEnabled = teamName.trim() !== '' && selectedSpaceships.length >= 3;
+
+        const handleCreateTeam = () => {
+            if (!teamName.trim()) {
+                setNotification('Please enter a team name.');
+            } else if (selectedSpaceships.length < 3) {
+                setNotification('Please select at least 3 spaceships.');
+            } else {
+                setNotification('Team created successfully!');
+                console.log('Team Created:', { teamName, selectedSpaceships: selectedSpaceships.map(item => item.name) });
+                setTeamName('');
+                setSelectedSpaceships([]);
+                setTimeout(() => setNotification(''), 3000);
+            }
+        };
 
     return (
         <Fragment>
