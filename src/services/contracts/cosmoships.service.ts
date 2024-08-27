@@ -4,6 +4,9 @@ import { CosmoShips } from "../../artifacts/contracts/contracts";
 import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
 import config from "../../config";
 import imageCacheService from "../ImageCacheService";
+import { useCallback, useMemo } from "react";
+import useGetContract from "./use-get-contract";
+import { SpaceshipMetadata } from "../../components/layouts/home-5b/CreateTeam/CreateTeamPage";
 
 const cosmoShipsAbi = CosmoShips!.abi;
 const IPFS_GATEWAY = config.ipfsGateway;
@@ -11,28 +14,7 @@ const CACHE_EXPIRATION_TIME = 5 * 60 * 1000;
 
 const useMintService = () => {
   const { signer, account, networkChainId, provider } = useWalletStore();
-
-  const getContract = (
-    signerOrProvider?: ethers.Signer | ethers.Provider | null,
-  ) => {
-    let contractSigner: ethers.Signer | ethers.Provider;
-
-    if (signerOrProvider) {
-      contractSigner = signerOrProvider;
-    } else if (signer) {
-      contractSigner = signer;
-    } else if (provider) {
-      contractSigner = provider;
-    } else {
-      throw new Error("Wallet not connected: No signer or provider available");
-    }
-
-    return new ethers.Contract(
-      config.mintAddress,
-      cosmoShipsAbi,
-      contractSigner,
-    );
-  };
+  const { getContract } = useGetContract(config.mintAddress, cosmoShipsAbi);
 
   const isTokenMinted = async (tokenId: number): Promise<boolean> => {
     const contract = getContract(provider);
@@ -99,27 +81,29 @@ const useMintService = () => {
     }
   };
 
-  let cachedTokenIds: { [address: string]: number[] } = {};
+  const getTokenIdsByOwner = useCallback(
+    async (ownerAddress: string): Promise<number[]> => {
+      let cachedTokenIds: { [address: string]: number[] } = {} as unknown as {
+        [address: string]: number[];
+      };
+      if (cachedTokenIds[ownerAddress]) {
+        console.log(`Returning cached token IDs for account ${ownerAddress}`);
+        return cachedTokenIds[ownerAddress];
+      }
 
-  const getTokenIdsByOwner = async (
-    ownerAddress: string,
-  ): Promise<number[]> => {
-    if (cachedTokenIds[ownerAddress]) {
-      console.log(`Returning cached token IDs for account ${ownerAddress}`);
-      return cachedTokenIds[ownerAddress];
-    }
+      const contract = getContract(provider);
+      const balance = await contract.balanceOf(ownerAddress);
+      const tokenIds = [];
+      for (let index = 0; index < Number(balance); index++) {
+        const tokenId = await contract.tokenOfOwnerByIndex(ownerAddress, index);
+        tokenIds.push(Number(tokenId));
+      }
 
-    const contract = getContract(provider);
-    const balance = await contract.balanceOf(ownerAddress);
-    const tokenIds = [];
-    for (let index = 0; index < Number(balance); index++) {
-      const tokenId = await contract.tokenOfOwnerByIndex(ownerAddress, index);
-      tokenIds.push(Number(tokenId));
-    }
-
-    cachedTokenIds[ownerAddress] = tokenIds;
-    return tokenIds;
-  };
+      cachedTokenIds[ownerAddress] = tokenIds;
+      return tokenIds;
+    },
+    [getContract, provider],
+  );
 
   const getTokenMetadata = async (tokenId: number): Promise<any> => {
     const contract = getContract(provider);
@@ -188,24 +172,19 @@ const useMintService = () => {
     }
   };
 
-  // const convertIPFSUrl = (url: string): string => {
-  //   if (url.startsWith('https://ipfs.io/ipfs/')) {
-  //     return url;
-  //   }
-  //   const path = url.split('/').slice(-2).join('/');
-  //   return `https://ipfs.io/ipfs/${path}`;
-  // };
-
-  const convertIPFSUrl = (url: string): string => {
+  const convertIPFSUrl = useCallback((url: string): string => {
+    if (!url) {
+      return url;
+    }
     if (url.startsWith("https://ipfs.io/ipfs/")) {
       return url;
     }
     // Otherwise, parse the URL and format it correctly.
     const path = url.split("/").slice(-2).join("/");
     return `https://ipfs.io/ipfs/${path}`;
-  };
+  }, []);
 
-  const getIPFSTokenMetadata = async (tokenId: number): Promise<any> => {
+  const getIPFSTokenMetadata = async (tokenId: number): Promise<Partial<SpaceshipMetadata>> => {
     const cacheKey = `metadata-${tokenId}`;
     const cachedMetadata = await imageCacheService.getCachedImage(cacheKey);
     if (cachedMetadata) {

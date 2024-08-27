@@ -16,19 +16,16 @@ let config = {
   currencyName: process.env.REACT_APP_CURRENCY_NAME || "",
   currencySymbol: process.env.REACT_APP_CURRENCY_SYMBOL || "",
   rpcUrl: process.env.REACT_APP_RPC_URL || "",
-  mintAddress: validateAddress(
-    process.env.REACT_APP_COSMOSHIPS_ADDRESS,
-    "Mint contract",
-  ),
-  gameLeagueAddress: validateAddress(
-    process.env.REACT_APP_GAME_LEAGUE_ADDRESS,
-    "Game League contract",
-  ),
+  mintAddress: process.env.REACT_APP_COSMOSHIPS_ADDRESS || '',
+  gameLeagueAddress: process.env.REACT_APP_GAME_LEAGUE_ADDRESS || '',
   mintPrice: ethers.parseEther(process.env.REACT_APP_MINT_PRICE || "0"),
-  ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "",
+  ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "https://ipfs.io/ipfs/",
 };
 
-if (process.env.REACT_APP_LOCAL_COSMOSHIPS_ADDRESS && process.env.REACT_APP_LOCAL_GAMELEAGUE_ADDRESS ) {
+if (
+  process.env.REACT_APP_LOCAL_COSMOSHIPS_ADDRESS &&
+  process.env.REACT_APP_LOCAL_GAMELEAGUE_ADDRESS
+) {
   config = {
     networkId: BigInt(Number(31337)),
     networkName: "Anvil",
@@ -37,7 +34,8 @@ if (process.env.REACT_APP_LOCAL_COSMOSHIPS_ADDRESS && process.env.REACT_APP_LOCA
     rpcUrl: "http://127.0.0.1:8545",
     mintAddress: process.env.REACT_APP_LOCAL_COSMOSHIPS_ADDRESS || "",
     mintPrice: ethers.parseEther(process.env.REACT_APP_MINT_PRICE || "0"),
-		gameLeagueAddress: process.env.REACT_APP_LOCAL_GAMELEAGUE_ADDRESS  || ''
+    gameLeagueAddress: process.env.REACT_APP_LOCAL_GAMELEAGUE_ADDRESS || "",
+    ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "https://ipfs.io/ipfs/",
   };
 }
 console.log("Config loaded:", {
@@ -47,4 +45,3 @@ console.log("Config loaded:", {
 });
 
 export default config;
-

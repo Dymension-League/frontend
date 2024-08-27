@@ -1,29 +1,30 @@
-import React, { useState, useEffect, Fragment, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  useRef,
+} from "react";
 import { useWalletStore } from "../../../../store/useWalletStore";
 import useGameLeagueService, {
   League,
   LeagueState,
 } from "../../../../services/contracts/gameleague.service";
 import "./PlaceBet.css";
-import spaceshipsData from "../../../../assets/space-ships/spaceships";
+import useMintService from "../../../../services/contracts/cosmoships.service";
+import {
+  fetchTokensWithMetadata,
+  SpaceshipMetadata,
+} from "../CreateTeam/CreateTeamPage";
+import { Swiper, SwiperSlide } from "swiper/react";
+import ShipCard from "../CreateTeam/ShipCard";
+import { A11y, Navigation, Pagination, Scrollbar } from "swiper";
 import imageCacheService from "../../../../services/ImageCacheService";
 
-interface Cosmoship {
-  id: number;
-  name: string;
-  type: string;
-  model: string;
-  color: string;
-  tool: string;
-  capacity: number;
-  attack: number;
-  speed: number;
-  shield: number;
-}
 interface TeamInfo {
   id: number;
   name: string;
-  cosmoships: Cosmoship[];
+  cosmoships: Partial<SpaceshipMetadata>[];
   owner: string;
 }
 interface Notification {
@@ -41,11 +42,12 @@ const PlaceBet: React.FC = () => {
     getTeamsByOwner,
     enrollToLeague,
     endEnrollmentAndStartBetting,
-    endBettingAndStartGame,
   } = useGameLeagueService();
+  const { getIPFSTokenMetadata, convertIPFSUrl } = useMintService();
 
+  const swiperRef = useRef<any>(null);
   const [teams, setTeams] = useState<TeamInfo[]>([]);
-  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<TeamInfo | null>(null);
   const [initiated, setInitiated] = useState<boolean>(false);
   const [betAmount, setBetAmount] = useState<number>(0);
   const [notification, setNotification] = useState<Notification | null>(null);
@@ -76,24 +78,15 @@ const PlaceBet: React.FC = () => {
         leagueData.enrolledTeams.map(async (teamId: number) => {
           const [teamName, nftIdResults, teamOwner] = await getTeam(teamId);
           const nftIds = [...nftIdResults];
-          const filteredSpaceships = spaceshipsData.filter((spaceship, idx) =>
-            nftIds.includes(BigInt(idx)),
+          const tokensWithMetadata = await fetchTokensWithMetadata(
+            nftIds,
+            getIPFSTokenMetadata,
           );
 
-          const images = filteredSpaceships.map((spaceship) => spaceship.img);
-          const cachedImages = await imageCacheService.loadImages(images);
-          const filteredSpaceshipsWithImage = filteredSpaceships.map(
-            (spaceship) => {
-              return {
-                ...spaceship,
-                image: cachedImages[0],
-              };
-            },
-          );
           return {
             id: teamId,
             name: teamName,
-            cosmoships: filteredSpaceshipsWithImage,
+            cosmoships: tokensWithMetadata,
             owner: teamOwner,
           };
         }),
@@ -106,7 +99,7 @@ const PlaceBet: React.FC = () => {
     } finally {
       setInitiated(true);
     }
-  }, [getCurrentLeague, getTeam]);
+  }, [getCurrentLeague, getIPFSTokenMetadata, getTeam]);
 
   useEffect(() => {
     if (account && !initiated) {
@@ -122,9 +115,8 @@ const PlaceBet: React.FC = () => {
   const handleBet = async () => {
     console.log("handling bet");
     console.log(league!.id);
-    console.log(selectedTeamId);
     console.log(betAmount);
-    if (selectedTeamId === null) {
+    if (selectedTeam?.id === null) {
       notify("Please select a team.", "error");
       return;
     }
@@ -140,7 +132,7 @@ const PlaceBet: React.FC = () => {
     }
 
     try {
-      await placeBet(league!.id, selectedTeamId, betAmount);
+      await placeBet(league!.id, selectedTeam!.id, betAmount);
       notify("Bet placed successfully!", "success");
     } catch (error) {
       console.error("Error placing bet:", error);
@@ -209,9 +201,43 @@ const PlaceBet: React.FC = () => {
     </div>
   );
 
-  console.log(bettingAllowed, "bettingAllowed");
-  console.log(selectedTeamId, "selectedTeamId");
-  console.log(betAmount, "betAmount");
+  const handleImageLoad = useCallback(
+    async (
+      token: SpaceshipMetadata,
+      mediaElement: HTMLImageElement | HTMLVideoElement,
+    ) => {
+      const convertedUrl = convertIPFSUrl(token.img);
+      console.log("Final URL:", convertedUrl);
+
+      try {
+        const cachedMedia = await imageCacheService.lazyLoadImage(
+          convertedUrl,
+          mediaElement,
+        );
+        if (cachedMedia) {
+          mediaElement.src = cachedMedia as string;
+        } else {
+          mediaElement.src = convertedUrl;
+          console.error(`Media not loaded from cache: ${convertedUrl}`);
+        }
+      } catch (error) {
+        console.error("Error loading media:", error);
+        mediaElement.src = convertedUrl;
+      }
+    },
+    [convertIPFSUrl],
+  );
+
+  const onSelectTeam = (teamId: number) => {
+    //find team by id
+    const foundTeam = teams.find((team) => {
+      return team.id === teamId;
+    });
+    if (foundTeam) {
+      setSelectedTeam(foundTeam);
+    }
+  };
+
   return (
     <Fragment>
       <section className="tf-section place-bet">
@@ -237,35 +263,27 @@ const PlaceBet: React.FC = () => {
                 {teams.length > 0 ? (
                   teams.map((team) => (
                     <div
+                      onClick={() => onSelectTeam(team.id)}
                       key={team.id}
                       className={`${
-                        selectedTeamId === team.id
+                        selectedTeam?.id === team.id
                           ? "border border-primary"
                           : ""
                       }`}
                     >
-                      <div
-                        className={`card team-card d-inline-block mx-2`}
-                        onClick={() => setSelectedTeamId(team.id)}
-                        style={{ width: "300px" }} // Adjust the width of each card
-                      >
-                        <div className="card-body p-3">
-                          <h4 className="card-title text-center mb-5">
-                            {team.name}
-                          </h4>
-                          {team.cosmoships.map((ship, index) => (
-                            <div key={ship.id}>
-                              <h6 className="text-center mt-2">{ship.name}</h6>
-                              <div key={index} className="m-3">
-                                {renderStatsBar("Capacity", ship.capacity)}
-                                {renderStatsBar("Attack", ship.attack)}
-                                {renderStatsBar("Speed", ship.speed)}
-                                {renderStatsBar("Shield", ship.shield)}
-                              </div>
-                            </div>
-                          ))}
+                      {team.cosmoships.map((token, index) => (
+                        <div key={token.id}>
+                          <ShipCard
+                            token={token as SpaceshipMetadata}
+                            selectedTokenIds={selectedTeam?.cosmoships?.map(
+                              (t) => t!.id as number,
+                            ) || []}
+                            handleSelectToken={() => {}}
+                            swiperRef={swiperRef}
+                            handleImageLoad={handleImageLoad}
+                          />
                         </div>
-                      </div>
+                      ))}
                     </div>
                   ))
                 ) : (
@@ -295,7 +313,7 @@ const PlaceBet: React.FC = () => {
                 }`}
                 onClick={handleBet}
                 disabled={
-                  !bettingAllowed || selectedTeamId === null || betAmount <= 0
+                  !bettingAllowed || selectedTeam?.id === null || betAmount <= 0
                 }
               >
                 Place Bet
