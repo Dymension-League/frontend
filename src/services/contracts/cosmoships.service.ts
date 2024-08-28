@@ -8,7 +8,6 @@ import imageCacheService from "../ImageCacheService";
 
 const cosmoShipsAbi = cosmoShipsArtifact.abi;
 const IPFS_GATEWAY = config.ipfsGateway;
-const CACHE_EXPIRATION_TIME = 5 * 60 * 1000;
 
 const useMintService = () => {
   const { signer, account, networkChainId, provider } = useWalletStore();
@@ -53,9 +52,7 @@ const useMintService = () => {
     const contract = getContract(signer);
 
     try {
-      // TODO: Revert to batch minting
       const startTokenId = await contract.nextTokenIdToMint();
-      console.log('startTokenId', Number(startTokenId))
 
       const attributes: number[] = [];
       const proofs: string[][] = [];

@@ -1,6 +1,13 @@
 /* CSS for selected spaceship card */
+.selected-card {
+    border: 2px solid #00f !important; /* Blue border to indicate selection */
+    border-radius: 10px; /* Optional: adds rounded corners */
+    transition: border 0.3s ease; /* Optional: smooth transition effect */
+}
+
+/* Ensure the styling targets the correct element */
 .selected-card .sc-card-product {
-    border: 2px solid #00f;
+    border: none; /* Prevent any conflicting borders within the card */
 }
 
 /* CSS for the Create Team button */
