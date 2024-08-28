@@ -5,21 +5,19 @@ import 'swiper/scss';
 import 'swiper/scss/navigation';
 import 'swiper/scss/pagination';
 import { useWalletStore } from '../../../../store/useWalletStore';
-import useGameLeagueService from '../../../../services/contracts/gameleague.service';
 import imageCacheService from "../../../../services/ImageCacheService";
 import useMintService from "../../../../services/contracts/cosmoships.service";
-import config from "../../../../config";
+import { Link } from "react-router-dom";
 
 const CreateTeam = () => {
     const { account } = useWalletStore();
     const { getTokenIdsByOwner, getIPFSTokenMetadata } = useMintService();
     const [ownedTokens, setOwnedTokens] = useState([]);
     const [selectedTokenIds, setSelectedTokenIds] = useState([]);
-    // const [isLoading, setIsLoading] = useState(true);
 
     const fetchOwnedTokens = useCallback(async () => {
         if (!account) return;
-        // setIsLoading(true);
+        // (true);
 
         try {
             const tokenIds = await getTokenIdsByOwner(account);
@@ -44,7 +42,7 @@ const CreateTeam = () => {
         if (account) {
             fetchOwnedTokens();
         }
-    }, [account]);
+    }, [account, fetchOwnedTokens]);
 
     const handleSelectToken = (tokenId) => {
         setSelectedTokenIds((prev) => {
@@ -57,14 +55,25 @@ const CreateTeam = () => {
         });
     };
 
-    // if (isLoading) {
-    //     return <div>Loading...</div>;
-    // }
-
     return (
         <Fragment>
             <section className="tf-section live-auctions">
                 <div className="themesflat-container">
+                    {/* OVERLAY & BREADCRUMB */}
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="page-title-heading mg-bt-12">
+                                <h1 className="heading text-center">Create your Team</h1>
+                            </div>
+                            <div className="breadcrumbs style2">
+                                <ul>
+                                    <li><Link to="/">Home</Link></li>
+                                    {/*<li><Link to="/mint-ship">Mint</Link></li>*/}
+                                    <li>Create your Team</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                     <div className="row">
                         <div className="col-md-12">
                             <div className="heading-live-auctions">
@@ -76,25 +85,27 @@ const CreateTeam = () => {
                                 modules={[Navigation, Pagination, Scrollbar, A11y]}
                                 spaceBetween={30}
                                 breakpoints={{
-                                    0: { slidesPerView: 1 },
-                                    767: { slidesPerView: 2 },
-                                    991: { slidesPerView: 3 },
+                                    0: {slidesPerView: 1},
+                                    767: {slidesPerView: 2},
+                                    991: {slidesPerView: 3},
                                 }}
                                 navigation
-                                pagination={{ clickable: true }}
-                                scrollbar={{ draggable: true }}
+                                pagination={{clickable: true}}
+                                scrollbar={{draggable: true}}
                             >
                                 {ownedTokens.map((token) => (
                                     <SwiperSlide key={token.id}>
-                                        <div className={`swiper-slide ${selectedTokenIds.includes(token.id) ? 'selected-card' : ''}`}
-                                             onClick={() => handleSelectToken(token.id)}>
+                                        <div
+                                            className={`swiper-slide ${selectedTokenIds.includes(token.id) ? 'selected-card' : ''}`}
+                                            onClick={() => handleSelectToken(token.id)}>
                                             <div className="slider-item">
                                                 <div className="sc-card-product">
                                                     <div className="card-media">
                                                         <video
                                                             ref={(el) => el && imageCacheService.lazyLoadImage(token.img, el)}
                                                             src={token.img}
-                                                            onLoad={() => { /* No action needed */ }}
+                                                            onLoad={() => { /* No action needed */
+                                                            }}
                                                         />
                                                     </div>
                                                     <div className="card-title">

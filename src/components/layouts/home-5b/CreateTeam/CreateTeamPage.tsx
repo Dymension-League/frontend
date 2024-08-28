@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useMemo, useRef, Fragment} from 'react';
+import React, {useState, useEffect, useCallback, Fragment} from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
 import 'swiper/scss';
@@ -10,6 +10,7 @@ import imageCacheService from "../../../../services/ImageCacheService";
 import '../styles/Home05b.css';
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import config from "../../../../config";
+import { Link } from "react-router-dom";
 
 interface Notification {
     message: string;
@@ -38,27 +39,11 @@ const CreateTeam: React.FC = () => {
     const [ownedTokens, setOwnedTokens] = useState<SpaceshipMetadata[]>([]);
     const [selectedTokenIds, setSelectedTokenIds] = useState<number[]>([]);
     const [notification, setNotification] = useState<Notification | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const swiperRef = useRef<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [initiated, setInitiated] = useState<boolean>(false);
 
-    const fetchOwnedTokenIds = useCallback(async () => {
-        if (!account) return [];
-        try {
-            const tokenIds = await getTokenIdsByOwner(account);
-            // console.log(`Fetched ${tokenIds.length} token IDs for account ${account}`);
-            return tokenIds;
-        } catch (error) {
-            console.error('Error fetching owned token IDs:', error);
-            setError('Failed to fetch owned spaceships. Please check your connection and try again.');
-            return [];
-        }
-    }, [account, getTokenIdsByOwner]);
-
     const fetchOwnedTokens = useCallback(async () => {
         if (!account) return;
-        // setIsLoading(true);
 
         try {
             const tokenIds = await getTokenIdsByOwner(account);
@@ -82,13 +67,12 @@ const CreateTeam: React.FC = () => {
         }
     }, [account, getTokenIdsByOwner, getIPFSTokenMetadata]);
 
-    const ownedTokenIds = useMemo(() => fetchOwnedTokenIds(), [fetchOwnedTokenIds]);
 
     useEffect(() => {
         if (!initiated) {
             fetchOwnedTokens();
         }
-    }, [fetchOwnedTokens]);
+    }, [fetchOwnedTokens, initiated]);
 
     useEffect(() => {
         console.log('Rendering component with ownedTokens:', ownedTokens);
@@ -110,7 +94,7 @@ const CreateTeam: React.FC = () => {
             console.error('Error loading media:', error);
             mediaElement.src = convertedUrl;
         }
-    }, []);
+    }, [convertIPFSUrl]);
 
 
 
@@ -153,6 +137,22 @@ const CreateTeam: React.FC = () => {
             // Create the team
             await createTeam(selectedTokenIds, teamName);
 
+            // Clear cache for selected tokens and their metadata
+            await Promise.all(
+                selectedTokenIds.map(async (tokenId) => {
+                    const token = ownedTokens.find(token => token.id === tokenId);
+                    if (token) {
+                        await imageCacheService.deleteCachedImage(token.img);
+                        await imageCacheService.deleteCachedMetadata(tokenId);
+                    }
+                })
+            );
+
+            // Update ownedTokens state to remove the selected tokens
+            setOwnedTokens((prevTokens) =>
+                prevTokens.filter((token) => !selectedTokenIds.includes(token.id))
+            );
+
             // Reset form
             setTeamName('');
             setSelectedTokenIds([]);
@@ -163,10 +163,6 @@ const CreateTeam: React.FC = () => {
         }
     };
 
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -175,6 +171,22 @@ const CreateTeam: React.FC = () => {
         <Fragment>
             <section className="tf-section live-auctions">
             <div className="themesflat-container">
+                {/* OVERLAY & BREADCRUMB */}
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="page-title-heading mg-bt-24"/>
+                        <div className="page-title-heading mg-bt-24">
+                            <h1 className="heading text-center">Create your Team</h1>
+                        </div>
+                        <div className="breadcrumbs style2">
+                            <ul>
+                                <li><Link to="/">Home</Link></li>
+                                <li><Link to="/mint-ship">Mint</Link></li>
+                                <li>Create your Team</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col-md-12">
                         <div className="heading-live-auctions">
@@ -211,14 +223,11 @@ const CreateTeam: React.FC = () => {
                                                 <div className="slider-item">
                                                     <div className="sc-card-product">
                                                         <div className="card-media">
+                                                            {/*<video src={token.img} autoPlay loop muted/>*/}
                                                             <video
                                                                 ref={(el) => el && handleImageLoad(token, el)}
                                                                 src={token.img}
-                                                                onLoad={() => {
-                                                                    if (swiperRef.current) {
-                                                                        swiperRef.current.update();
-                                                                    }
-                                                                }}
+                                                                autoPlay loop muted
                                                             />
                                                         </div>
                                                         <div className="card-title">
