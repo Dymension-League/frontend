@@ -7,7 +7,7 @@ interface WalletState {
   networkName: string;
   networkChainId: number | null;
   provider: ethers.BrowserProvider | null;
-  signer: ethers.Signer | null;
+  signer: ethers.Signer | undefined;
   error: Error | null;
   isOnCorrectNetwork: boolean;
   isEthereumAvailable: boolean;
@@ -117,7 +117,7 @@ export const useWalletStore = create<WalletState>((set, get) => {
     networkName: "",
     networkChainId: null,
     provider: null,
-    signer: null,
+    signer: undefined,
     error: null,
     isOnCorrectNetwork: false,
     isEthereumAvailable,
