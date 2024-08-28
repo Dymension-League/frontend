@@ -169,20 +169,6 @@ const CreateTeam: React.FC = () => {
             <section className="tf-section live-auctions">
                 <div className="themesflat-container">
                     <div className="row">
-                        <div className="col-md-12">
-                            <div className="page-title-heading mg-bt-24"/>
-                            <div className="page-title-heading mg-bt-24">
-                                <h1 className="heading text-center">Create your Team</h1>
-                            </div>
-                            <div className="breadcrumbs style2">
-                                <ul>
-                                    <li><Link to="/">Home</Link></li>
-                                    <li>Create your Team</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
                     <div className="col-md-12">
                             <div className="heading-live-auctions">
                                 <h2 className="tf-title pb-20">Create your Team</h2>

@@ -31,12 +31,11 @@ import FAQ from "./FAQ";
 import Contact01 from "./Contact01";
 import Contact02 from "./Contact02";
 import Home05b from "./Home05b";
-import CreateTeam from "../components/layouts/home-5b/CreateTeam/CreateTeam";
 import CreateTeamPage from "./CreateTeam/CreateTeamPage";
 import MintShipPage from "./MintShip/MintShipPage";
-import MintShipsPage from "./MintShipsPage"
 import HomePage from "./Home/HomePage";
 import NewTeam from "../components/layouts/home-5b/CreateTeam/NewTeam";
+import EnrollTeamPage from "./EnrollTeam/EnrollTeamPage";
 
 
 const routes = [
@@ -49,6 +48,7 @@ const routes = [
   { path: '/home-05b', component: <Home05b />},
   { path: '/create-team', component: <CreateTeamPage />},
   { path: '/new-team', component: <NewTeam />},
+  { path: '/enroll-team', component: <EnrollTeamPage />},
   { path: '/mint-ship', component: <MintShipPage />},
   { path: '/home-06', component: <Home06 />},
   { path: '/home-07', component: <Home07 />},

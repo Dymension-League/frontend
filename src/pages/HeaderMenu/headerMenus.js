@@ -20,17 +20,17 @@ const headerMenus = [
         id: 4,
         name: 'Governance Simulator',
         links: '/governance-simulator'
+    },
+    {
+        id: 5,
+        name: 'Bet',
+        links: '/bet'
     }
-//     {
-//         id: 5,
-//         name: 'Bet',
-//         links: '/bet'
-//     },
-//     {
-//         id: 6,
-//         name: 'Leaderboard',
-//         links: '/leaderboard'
-//     }
+    // {
+    //     id: 6,
+    //     name: 'Leaderboard',
+    //     links: '/leaderboard'
+    // }
 ];
 
 export default headerMenus;
