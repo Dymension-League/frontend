@@ -167,14 +167,6 @@ const useMintService = () => {
     }
   };
 
-  // const convertIPFSUrl = (url: string): string => {
-  //   if (url.startsWith('https://ipfs.io/ipfs/')) {
-  //     return url;
-  //   }
-  //   const path = url.split('/').slice(-2).join('/');
-  //   return `https://ipfs.io/ipfs/${path}`;
-  // };
-
   const convertIPFSUrl = (url: string): string => {
     if (url.startsWith('https://ipfs.io/ipfs/')) {
       return url;
@@ -183,8 +175,6 @@ const useMintService = () => {
     const path = url.split('/').slice(-2).join('/');
     return `https://ipfs.io/ipfs/${path}`;
   };
-
-
 
   const getIPFSTokenMetadata = async (tokenId: number): Promise<any> => {
     const cacheKey = `metadata-${tokenId}`;
@@ -218,8 +208,13 @@ const useMintService = () => {
         shield: Number(metadata.attributes.find((attr: any) => attr.trait_type === "Shield")?.value) || 0
       };
 
+      // Serialize BigInt to string
+      const stringifiedMetadata = JSON.stringify(tokenMetadata, (key, value) =>
+          typeof value === 'bigint' ? value.toString() : value
+      );
+
       // Cache the metadata
-      await imageCacheService.setCachedImage(cacheKey, JSON.stringify(tokenMetadata));
+      await imageCacheService.setCachedImage(cacheKey, stringifiedMetadata);
 
       return tokenMetadata;
     } catch (error) {
