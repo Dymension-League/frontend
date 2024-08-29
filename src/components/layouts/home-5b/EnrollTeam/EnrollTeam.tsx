@@ -1,5 +1,4 @@
-// src/components/layouts/home-5b/EnrollTeam/EnrollTeam.tsx
-import React, {useState, useEffect, Fragment} from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useWalletStore } from "../../../../store/useWalletStore";
 import useGameLeagueService from "../../../../services/contracts/gameleague.service";
 import useMintService from "../../../../services/contracts/cosmoships.service";
@@ -104,11 +103,11 @@ const EnrollTeam: React.FC = () => {
             <section className="tf-section live-auctions">
                 <div className="themesflat-container">
                     <h1>My Teams</h1>
-                    <div className="container">
+                    {/*<div className="container">*/}
                         {teams.map((team, index) => (
                             <TeamCard key={index} team={team} onEnroll={handleEnroll} />
                         ))}
-                    </div>
+                    {/*</div>*/}
                 </div>
             </section>
         </Fragment>
