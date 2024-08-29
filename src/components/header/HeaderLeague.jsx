@@ -47,9 +47,11 @@ const HeaderLeague = () => {
                             <div className="wrap-box flex">
                                 <div id="site-logo" className="clearfix">
                                     <div id="site-logo-inner">
-                                        <Link to="/" rel="home" className="main-logo">
+                                        <Link to="/" rel="home" className="main-logo" style={{ display: 'flex', alignItems: 'center' }}>
                                             <MdOutlineRocketLaunch size={70} color='#fff'/>
-                                            <span className='logo-text' style={{ color: '#fff', marginLeft: '10px' }}>Dymension League</span>
+                                            <span className='logo-text' style={{ color: '#fff', marginLeft: '10px', fontSize: '32px', lineHeight: '1.2', fontWeight: 'bold' }}>
+                                                Dymension<br />League
+                                            </span>
                                         </Link>
                                     </div>
                                 </div>
