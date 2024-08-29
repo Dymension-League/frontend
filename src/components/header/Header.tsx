@@ -1,42 +1,48 @@
-import { useRef, useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import headerMenus from "../../pages/HeaderMenu/headerMenus";
+import React, { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import DarkMode from "./DarkMode";
 import WalletButton from "./WalletButton";
 import NetworkButton from "./NetworkButton";
 import { MdOutlineRocketLaunch } from "react-icons/md";
+import ProdNav from "./navbar/ProdNav";
+import TestNav from "./navbar/TestNav";
 
-const Header = () => {
-  const { pathname } = useLocation();
+const Header: React.FC = () => {
+  const isProdEnv = process.env.REACT_APP_PROD_ENV === "true";
 
-  const headerRef = useRef(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuLeft = useRef<HTMLElement>(null);
+  const btnToggle = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     window.addEventListener("scroll", isSticky);
     return () => {
       window.removeEventListener("scroll", isSticky);
     };
-  });
-  const isSticky = (e) => {
-    const header = document.querySelector(".js-header");
-    const scrollTop = window.scrollY;
-    scrollTop >= 300
-      ? header.classList.add("is-fixed")
-      : header.classList.remove("is-fixed");
-    scrollTop >= 400
-      ? header.classList.add("is-small")
-      : header.classList.remove("is-small");
-  };
+  }, []);
 
-  const menuLeft = useRef(null);
-  const btnToggle = useRef(null);
+  const isSticky = () => {
+    const header = document.querySelector(".js-header");
+    if (header) {
+      const scrollTop = window.scrollY;
+      scrollTop >= 300
+        ? header.classList.add("is-fixed")
+        : header.classList.remove("is-fixed");
+      scrollTop >= 400
+        ? header.classList.add("is-small")
+        : header.classList.remove("is-small");
+    }
+  };
 
   const menuToggle = () => {
-    menuLeft.current.classList.toggle("active");
-    btnToggle.current.classList.toggle("active");
+    if (menuLeft.current && btnToggle.current) {
+      menuLeft.current.classList.toggle("active");
+      btnToggle.current.classList.toggle("active");
+    }
   };
 
-  const [activeIndex, setActiveIndex] = useState(null);
-  const handleOnClick = (index) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const handleOnClick = (index: number) => {
     setActiveIndex(index);
   };
 
@@ -84,37 +90,18 @@ const Header = () => {
                 >
                   <span></span>
                 </div>
-                <nav id="main-nav" className="main-nav" ref={menuLeft}>
-                  <ul id="menu-primary-menu" className="menu">
-                    {headerMenus.map((data, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleOnClick(index)}
-                        className={`menu-item ${
-                          data.namesub ? "menu-item-has-children" : ""
-                        } ${activeIndex === index ? "active" : ""}`}
-                      >
-                        <Link to={data.links}>{data.name}</Link>
-                        {data.namesub && (
-                          <ul className="sub-menu">
-                            {data.namesub.map((submenu) => (
-                              <li
-                                key={submenu.id}
-                                className={
-                                  pathname === submenu.links
-                                    ? "menu-item current-item"
-                                    : "menu-item"
-                                }
-                              >
-                                <Link to={submenu.links}>{submenu.sub}</Link>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
+
+                {/* Conditional rendering based on environment */}
+                {isProdEnv ? (
+                  <ProdNav menuLeft={menuLeft} />
+                ) : (
+                  <TestNav
+                    menuLeft={menuLeft}
+                    handleOnClick={handleOnClick}
+                    activeIndex={activeIndex}
+                  />
+                )}
+
                 <div className="flat-search-btn flex">
                   <WalletButton />
                   {/*<NetworkButton />*/}
