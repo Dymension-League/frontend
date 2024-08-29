@@ -1,16 +1,14 @@
-import { ethers } from "ethers";
 import { useWalletStore } from "../../store/useWalletStore";
 import { CosmoShips } from "../../artifacts/contracts/contracts";
 import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
 import config from "../../config";
 import imageCacheService from "../ImageCacheService";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import useGetContract from "./use-get-contract";
 import { SpaceshipMetadata } from "../../components/layouts/home-5b/CreateTeam/CreateTeamPage";
 
 const cosmoShipsAbi = CosmoShips!.abi;
 const IPFS_GATEWAY = config.ipfsGateway;
-const CACHE_EXPIRATION_TIME = 5 * 60 * 1000;
 
 const useMintService = () => {
   const { signer, account, networkChainId, provider } = useWalletStore();
@@ -172,16 +170,23 @@ const useMintService = () => {
     }
   };
 
-  const convertIPFSUrl = useCallback((url: string): string => {
-    if (!url) {
-      return url;
+  const convertIPFSUrl = useCallback((url: string | undefined): string => {
+    if (!url || typeof url !== 'string') {
+      console.error('Invalid IPFS URL:', url);
+      return '';
     }
+
     if (url.startsWith("https://ipfs.io/ipfs/")) {
       return url;
     }
-    // Otherwise, parse the URL and format it correctly.
-    const path = url.split("/").slice(-2).join("/");
-    return `https://ipfs.io/ipfs/${path}`;
+
+    try {
+      const path = url.split("/").slice(-2).join("/");
+      return `https://ipfs.io/ipfs/${path}`;
+    } catch (error) {
+      console.error('Error converting IPFS URL:', error);
+      return '';
+    }
   }, []);
 
   const getIPFSTokenMetadata = async (tokenId: number): Promise<Partial<SpaceshipMetadata>> => {
@@ -245,10 +250,15 @@ const useMintService = () => {
           ) || 0,
       };
 
+      // Serialize BigInt to string
+      const stringifiedMetadata = JSON.stringify(tokenMetadata, (key, value) =>
+          typeof value === 'bigint' ? value.toString() : value
+      );
+
       // Cache the metadata
       await imageCacheService.setCachedImage(
         cacheKey,
-        JSON.stringify(tokenMetadata),
+        JSON.stringify(stringifiedMetadata),
       );
 
       return tokenMetadata;

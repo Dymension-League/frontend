@@ -11,8 +11,6 @@ import "../styles/Home05b.css";
 import MintSection from "./MintSection";
 import { useWalletStore } from "../../../../store/useWalletStore";
 
-const MAX_SHIPS_MINT = 3;
-
 const MintShip: React.FC = () => {
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const [isMinting, setIsMinting] = useState(false);
@@ -47,7 +45,6 @@ const MintShip: React.FC = () => {
   };
 
   const handleMintShip = async () => {
-		console.log('minting')
     try {
       setIsMinting(true);
       await mintTokens(numberOfShips, notify);

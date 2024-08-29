@@ -1,5 +1,5 @@
-import {openDB} from 'idb';
-import {convertIPFSUrl} from './ipfsUtils';
+import { openDB } from 'idb';
+import { convertIPFSUrl } from './ipfsUtils';
 
 class ImageCacheService {
     constructor() {
@@ -101,6 +101,21 @@ class ImageCacheService {
         }
     }
 
+    async deleteCachedImage(url) {
+        const db = await this.dbPromise;
+        const tx = db.transaction('images', 'readwrite');
+        const store = tx.objectStore('images');
+        const cacheKey = convertIPFSUrl(url);
+        await store.delete(cacheKey);
+    }
+
+    async deleteCachedMetadata(tokenId) {
+        const db = await this.dbPromise;
+        const tx = db.transaction('images', 'readwrite');
+        const store = tx.objectStore('images');
+        const cacheKey = `metadata-${tokenId}`;
+        await store.delete(cacheKey);
+    }
 }
 
 const imageCacheService = new ImageCacheService();
