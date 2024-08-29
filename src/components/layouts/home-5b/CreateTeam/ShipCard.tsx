@@ -1,4 +1,4 @@
-import { SpaceshipMetadata } from "./CreateTeamPage";
+import { Ship } from "../EnrollTeam/TeamCard";
 
 const ShipCard = ({
                     token,
@@ -7,14 +7,14 @@ const ShipCard = ({
                     swiperRef,
                     handleImageLoad,
                   }: {
-  token: SpaceshipMetadata;
+  token: Ship;
   selectedTokenIds: Array<number>;
   swiperRef: React.MutableRefObject<{
     update: () => void;
   }>;
   handleSelectToken: (id: number) => void;
   handleImageLoad: (
-      token: SpaceshipMetadata,
+      token: Ship,
       mediaElement: HTMLImageElement | HTMLVideoElement,
   ) => void;
 }) => {
