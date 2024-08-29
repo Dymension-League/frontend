@@ -4,7 +4,7 @@ import headerMenus from "../../pages/HeaderMenu/headerMenus";
 import DarkMode from './DarkMode';
 import WalletButton from './WalletButton';
 import NetworkButton from './NetworkButton';
-import { FaRocket } from 'react-icons/fa';
+import { MdOutlineRocketLaunch } from "react-icons/md";
 import avt from '../../assets/images/avatar/avt-2.jpg';
 import coin from '../../assets/images/logo/coin.svg';
 
@@ -48,7 +48,7 @@ const HeaderLeague = () => {
                                 <div id="site-logo" className="clearfix">
                                     <div id="site-logo-inner">
                                         <Link to="/" rel="home" className="main-logo">
-                                            <FaRocket size={30} />
+                                            <MdOutlineRocketLaunch size={70} color='#fff'/>
                                             <span className='logo-text' style={{ color: '#fff', marginLeft: '10px' }}>Dymension League</span>
                                         </Link>
                                     </div>
