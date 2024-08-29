@@ -179,9 +179,10 @@ const CreateTeam = () => {
       // Update ownedTokens state to remove the selected tokens
       setOwnedTokens(prevTokens =>
           prevTokens.filter(token => {
-              if (token.id) {
-                  !selectedTokenIds.includes(token.id)
+              if (token.id !== undefined) {
+                  return !selectedTokenIds.includes(token.id);
               }
+              return true;
           })
       );
 
@@ -211,77 +212,77 @@ const CreateTeam = () => {
   return (
     <Fragment>
       <section className="tf-section live-auctions">
-        <div className="themesflat-container">
-            <div className="row">
-                <div className="col-md-12">
-                    <div className="page-title-heading mg-bt-24"/>
-                    <div className="page-title-heading mg-bt-24">
-                        <h1 className="heading text-center">Create your Team</h1>
-                    </div>
-                    <div className="breadcrumbs style2">
-                        <ul>
-                            <li><Link to="/">Home</Link></li>
-                            <li>Create your Team</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-          <div className="row">
-            <div className="col-md-12">
-              <div className="heading-live-auctions">
-                <h2 className="tf-title pb-20">Create your Team</h2>
-                <input
-                  type="text"
-                  placeholder="Enter team name"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                />
+          <div className="themesflat-container">
+              <div className="row">
+                  <div className="col-md-12">
+                      <div className="page-title-heading mg-bt-24"/>
+                      <div className="page-title-heading mg-bt-24">
+                          <h1 className="heading text-center">Create your Team</h1>
+                      </div>
+                      <div className="breadcrumbs style2">
+                          <ul>
+                              <li><Link to="/">Home</Link></li>
+                              <li>Create your Team</li>
+                          </ul>
+                      </div>
+                  </div>
               </div>
-            </div>
-            <div className="col-md-12">
-              <Swiper
-                modules={[Navigation, Pagination, Scrollbar, A11y]}
-                spaceBetween={30}
-                breakpoints={{
-                  0: { slidesPerView: 1 },
-                  767: { slidesPerView: 2 },
-                  991: { slidesPerView: 3 },
-                }}
-                navigation
-                pagination={{ clickable: true }}
-                scrollbar={{ draggable: true }}
-              >
-                {ownedTokens.map((token) => {
-                  return (
-                    <SwiperSlide key={token.id}>
-                      <ShipCard
-                        token={token as SpaceshipMetadata}
-                        selectedTokenIds={selectedTokenIds}
-                        handleSelectToken={handleSelectToken}
-                        swiperRef={swiperRef}
-                        handleImageLoad={handleImageLoad}
-                      />
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
-            </div>
-            {notification && (
-              <p className={`notification ${notification.type}`}>
-                {notification.message}
-              </p>
-            )}
-            <div className="col-md-12">
-              <button
-                className={`create-team-button ${isCreateTeamEnabled ? "enabled" : "disabled"}`}
-                onClick={handleCreateTeam}
-                disabled={!isCreateTeamEnabled}
-              >
-                Create Team
-              </button>
-            </div>
+              <div className="row">
+                  <div className="col-md-12">
+                      <div className="heading-live-auctions">
+                          <h2 className="tf-title pb-20">Create your Team</h2>
+                          <input
+                              type="text"
+                              placeholder="Enter team name"
+                              value={teamName}
+                              onChange={(e) => setTeamName(e.target.value)}
+                          />
+                      </div>
+                  </div>
+                  <div className="col-md-12">
+                      <Swiper
+                          modules={[Navigation, Pagination, Scrollbar, A11y]}
+                          spaceBetween={30}
+                          breakpoints={{
+                              0: {slidesPerView: 1},
+                              767: {slidesPerView: 2},
+                              991: {slidesPerView: 3},
+                          }}
+                          navigation
+                          pagination={{clickable: true}}
+                          scrollbar={{draggable: true}}
+                      >
+                          {ownedTokens.map((token) => {
+                              return (
+                                  <SwiperSlide key={token.id}>
+                                      <ShipCard
+                                          token={token as SpaceshipMetadata}
+                                          selectedTokenIds={selectedTokenIds}
+                                          handleSelectToken={handleSelectToken}
+                                          swiperRef={swiperRef}
+                                          handleImageLoad={handleImageLoad}
+                                      />
+                                  </SwiperSlide>
+                              );
+                          })}
+                      </Swiper>
+                  </div>
+                  {notification && (
+                      <p className={`notification ${notification.type}`}>
+                          {notification.message}
+                      </p>
+                  )}
+                  <div className="col-md-12">
+                      <button
+                          className={`create-team-button ${isCreateTeamEnabled ? "enabled" : "disabled"}`}
+                          onClick={handleCreateTeam}
+                          disabled={!isCreateTeamEnabled}
+                      >
+                          Create Team
+                      </button>
+                  </div>
+              </div>
           </div>
-        </div>
       </section>
     </Fragment>
   );
