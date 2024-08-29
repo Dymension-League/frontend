@@ -1,10 +1,9 @@
-import { ethers } from "ethers";
 import { useWalletStore } from "../../store/useWalletStore";
 import { CosmoShips } from "../../artifacts/contracts/contracts";
 import tokenData from "../../artifacts/proofs/proofs_0xcba72fb67462937b6fa3a41e7bbad36cf169815ea7fe65f8a4b85fd8f5facb28.json";
 import config from "../../config";
 import imageCacheService from "../ImageCacheService";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import useGetContract from "./use-get-contract";
 import { SpaceshipMetadata } from "../../components/layouts/home-5b/CreateTeam/CreateTeamPage";
 

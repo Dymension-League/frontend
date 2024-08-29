@@ -1,4 +1,4 @@
-import { Provider, useCallback } from "react";
+import { useCallback } from "react";
 import { BrowserProvider, ethers, Signer } from "ethers";
 import { useWalletStore } from "../../store/useWalletStore";
 

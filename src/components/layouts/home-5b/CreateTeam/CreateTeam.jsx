@@ -11,6 +11,7 @@ import imageCacheService from "../../../../services/ImageCacheService";
 import '../styles/Home05b.css';
 
     const CreateTeam = () => {
+        const [loadedImages, setLoadedImages] = useState([]);
         const [selectedSpaceships, setSelectedSpaceships] = useState([]);
         const [teamName, setTeamName] = useState('');
         const [notification, setNotification] = useState('');
@@ -25,12 +26,6 @@ import '../styles/Home05b.css';
 
         loadImages();
     }, []);
-
-        const handleImageLoad = useCallback((url, videoElement) => {
-            imageCacheService.lazyLoadImage(url, videoElement).then((cachedUrl) => {
-                videoElement.src = cachedUrl;
-            });
-        }, []);
 
         const handleSelectSpaceship = (spaceship) => {
             if (selectedSpaceships.includes(spaceship)) {
