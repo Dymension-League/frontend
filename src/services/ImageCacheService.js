@@ -1,5 +1,5 @@
-import {openDB} from 'idb';
-import {convertIPFSUrl} from './ipfsUtils';
+import { openDB } from 'idb';
+import { convertIPFSUrl } from './ipfsUtils';
 
 class ImageCacheService {
     constructor() {
