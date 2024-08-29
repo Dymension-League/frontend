@@ -15,7 +15,7 @@ const CreateTeamPage = () => {
                       <div className="col-md-12">
                           <div className="page-title-heading mg-bt-12">
                               <h1 className="heading text-center">
-                                  <li>Bet</li>
+                                  <li>Place a Bet on a Team</li>
                               </h1>
                           </div>
                           <div className="breadcrumbs style2">

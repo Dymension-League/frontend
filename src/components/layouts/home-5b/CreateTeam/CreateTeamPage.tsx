@@ -232,7 +232,8 @@ const CreateTeam = () => {
                         <div className="col-md-12">
                             <div className="row">
                                 {ownedTokens.slice(0, visible).map((token, index) => (
-                                    <div key={index} className="fl-item col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                                    <div key={index}
+                                         className="fl-item col-xl-3 col-lg-4 col-md-6 col-sm-6">
                                         <div
                                             className={`sc-card-product ${token.id !== undefined && selectedTokenIds.includes(token.id) ? 'selected-card' : ''}`}
                                             onClick={() => token.id !== undefined && handleSelectToken(token.id)}

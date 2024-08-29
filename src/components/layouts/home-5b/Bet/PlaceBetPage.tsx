@@ -1,11 +1,10 @@
 import React, { useState, useEffect, Fragment, useCallback, useRef } from "react";
 import { useWalletStore } from "../../../../store/useWalletStore";
 import useGameLeagueService, { League, LeagueState } from "../../../../services/contracts/gameleague.service";
-import "./PlaceBet.css";
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import { fetchTokensWithMetadata, SpaceshipMetadata } from "../CreateTeam/CreateTeamPage";
-import ShipCard from "../CreateTeam/ShipCard";
 import imageCacheService from "../../../../services/ImageCacheService";
+import ShipCard from "../CreateTeam/ShipCard";
 
 interface TeamInfo {
   id: number;
@@ -31,7 +30,6 @@ const PlaceBet: React.FC = () => {
     endEnrollmentAndStartBetting,
   } = useGameLeagueService();
   const { getIPFSTokenMetadata, convertIPFSUrl } = useMintService();
-
   const swiperRef = useRef<any>(null);
   const [teams, setTeams] = useState<TeamInfo[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<TeamInfo | null>(null);
@@ -84,7 +82,6 @@ const PlaceBet: React.FC = () => {
       notify("Failed to fetch league or team information.", "error");
     } finally {
       setIsLoading(false);
-      // setInitiated(true);
     }
   }, [getCurrentLeague, getIPFSTokenMetadata, getTeam]);
 
@@ -198,17 +195,14 @@ const PlaceBet: React.FC = () => {
         <section className="tf-section live-auctions">
           <div className="themesflat-container">
             <div className="row">
-              <div className="col-md-12">
-                <h2 className="tf-title pb-20">Place a Bet on a Team</h2>
+              <div className="col-md-12 text-center">
+                <div className="col-md-12">
+                  <h2 className="tf-title pb-20">Place a Bet on a Team</h2>
+                </div>
+                {league && <h4>{`League ${league.id}`}</h4>}
               </div>
             </div>
-            {league && (
-                <div className="row">
-                  <div className="col-md-12 text-center mb-4">
-                    <h4 className="tf-title pb-20">{`League ${league.id}`}</h4>
-                  </div>
-                </div>
-            )}
+            {/* Content of the Cards */}
             <div className="row">
               <div className="col-md-12">
                 <div className="d-flex justify-content-center overflow-auto" style={{ whiteSpace: "nowrap" }}>
@@ -254,8 +248,8 @@ const PlaceBet: React.FC = () => {
               </div>
               <div className="col-md-6 offset-md-3 text-center">
                 <button
-                    className={`btn btn-lg btn-primary place-bet-button ${bettingAllowed ? "enabled" : "disabled"}`}
-                    onClick={handleBet}
+                    className={`btn btn-lg btn-primary ${bettingAllowed ? "enabled" : "disabled"}`}
+                    onClick={() => handleBet()}
                     disabled={!bettingAllowed || !selectedTeam || betAmount <= 0}
                 >
                   Place Bet
