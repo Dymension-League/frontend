@@ -1,24 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useEffect, Fragment, useCallback, useRef } from "react";
 import { useWalletStore } from "../../../../store/useWalletStore";
-import useGameLeagueService, {
-  League,
-  LeagueState,
-} from "../../../../services/contracts/gameleague.service";
+import useGameLeagueService, { League, LeagueState } from "../../../../services/contracts/gameleague.service";
 import "./PlaceBet.css";
 import useMintService from "../../../../services/contracts/cosmoships.service";
-import {
-  fetchTokensWithMetadata,
-  SpaceshipMetadata,
-} from "../CreateTeam/CreateTeamPage";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { fetchTokensWithMetadata, SpaceshipMetadata } from "../CreateTeam/CreateTeamPage";
 import ShipCard from "../CreateTeam/ShipCard";
-import { A11y, Navigation, Pagination, Scrollbar } from "swiper";
 import imageCacheService from "../../../../services/ImageCacheService";
 
 interface TeamInfo {
@@ -27,6 +13,7 @@ interface TeamInfo {
   cosmoships: Partial<SpaceshipMetadata>[];
   owner: string;
 }
+
 interface Notification {
   message: string;
   type: "success" | "error";
@@ -49,15 +36,17 @@ const PlaceBet: React.FC = () => {
   const [teams, setTeams] = useState<TeamInfo[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<TeamInfo | null>(null);
   const [initiated, setInitiated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [betAmount, setBetAmount] = useState<number>(0);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [league, setLeague] = useState<League | null>(null);
   const [bettingAllowed, setBettingAllowed] = useState<boolean>(false);
 
   const fetchLeagueAndTeams = useCallback(async () => {
+    setInitiated(true);
+    setIsLoading(true);
     try {
-      const [id, state, prizePool, enrolledTeamsResult, totalBetsInLeague] =
-        await getCurrentLeague();
+      const [id, state, prizePool, enrolledTeamsResult, totalBetsInLeague] = await getCurrentLeague();
       const enrolledTeams = [...enrolledTeamsResult];
       const leagueData = {
         id,
@@ -75,21 +64,18 @@ const PlaceBet: React.FC = () => {
       }
 
       const teamDetails = await Promise.all(
-        leagueData.enrolledTeams.map(async (teamId: number) => {
-          const [teamName, nftIdResults, teamOwner] = await getTeam(teamId);
-          const nftIds = [...nftIdResults];
-          const tokensWithMetadata = await fetchTokensWithMetadata(
-            nftIds,
-            getIPFSTokenMetadata,
-          );
+          leagueData.enrolledTeams.map(async (teamId: number) => {
+            const [teamName, nftIdResults, teamOwner] = await getTeam(teamId);
+            const nftIds = [...nftIdResults];
+            const tokensWithMetadata = await fetchTokensWithMetadata(nftIds, getIPFSTokenMetadata);
 
-          return {
-            id: teamId,
-            name: teamName,
-            cosmoships: tokensWithMetadata,
-            owner: teamOwner,
-          };
-        }),
+            return {
+              id: teamId,
+              name: teamName,
+              cosmoships: tokensWithMetadata,
+              owner: teamOwner,
+            };
+          })
       );
 
       setTeams(teamDetails);
@@ -97,7 +83,8 @@ const PlaceBet: React.FC = () => {
       console.error("Error fetching league or teams:", error);
       notify("Failed to fetch league or team information.", "error");
     } finally {
-      setInitiated(true);
+      setIsLoading(false);
+      // setInitiated(true);
     }
   }, [getCurrentLeague, getIPFSTokenMetadata, getTeam]);
 
@@ -105,7 +92,7 @@ const PlaceBet: React.FC = () => {
     if (account && !initiated) {
       fetchLeagueAndTeams();
     }
-  }, [account, fetchLeagueAndTeams, getCurrentLeague, getTeam, initiated]);
+  }, [account, fetchLeagueAndTeams, initiated]);
 
   const notify = (message: string, type: "success" | "error") => {
     setNotification({ message, type });
@@ -113,26 +100,13 @@ const PlaceBet: React.FC = () => {
   };
 
   const handleBet = async () => {
-    console.log("handling bet");
-    console.log(league!.id);
-    console.log(betAmount);
-    if (selectedTeam?.id === null) {
-      notify("Please select a team.", "error");
-      return;
-    }
-
-    if (betAmount <= 0) {
-      notify("Please enter a valid bet amount.", "error");
-      return;
-    }
-
-    if (!bettingAllowed) {
-      notify("Betting is not allowed at this time.", "error");
+    if (!selectedTeam || betAmount <= 0 || !bettingAllowed) {
+      notify("Invalid bet or betting is not allowed at this time.", "error");
       return;
     }
 
     try {
-      await placeBet(league!.id, selectedTeam!.id, betAmount);
+      await placeBet(league!.id, selectedTeam.id, betAmount);
       notify("Bet placed successfully!", "success");
     } catch (error) {
       console.error("Error placing bet:", error);
@@ -141,22 +115,12 @@ const PlaceBet: React.FC = () => {
   };
 
   const handleInitializeLeague = async () => {
-    if (!account) {
-      return;
-    }
+    if (!account) return;
+
     try {
       const { teamIds } = await getTeamsByOwner(account);
-
-      if (teamIds.length === 0) {
-        notify("No teams available for enrollment.", "error");
-        return;
-      }
-
-      if (teamIds.length % 2 !== 0) {
-        notify(
-          "You must have an even number of teams for enrollment.",
-          "error",
-        );
+      if (teamIds.length === 0 || teamIds.length % 2 !== 0) {
+        notify("You need an even number of teams to enroll.", "error");
         return;
       }
 
@@ -173,181 +137,151 @@ const PlaceBet: React.FC = () => {
   };
 
   const handleEndEnrollment = async () => {
-    if (!account) {
-      return;
-    }
+    if (!account) return;
+
     try {
       await endEnrollmentAndStartBetting();
     } catch (error) {
-      console.error("Error initializing league or enrolling teams:", error);
+      console.error("Error ending enrollment and starting betting:", error);
     }
   };
 
-  const renderStatsBar = (label: string, value: number) => (
-    <div className="mb-2">
-      <label>{label}</label>
-      <div className="progress">
-        <div
-          className="progress-bar"
-          role="progressbar"
-          style={{ width: `${(value / 10) * 100}%` }}
-          aria-valuenow={value}
-          aria-valuemin={0}
-          aria-valuemax={10}
-        >
-          {value}/10
-        </div>
-      </div>
-    </div>
-  );
-
-  const handleImageLoad = useCallback(
-    async (
-      token: SpaceshipMetadata,
-      mediaElement: HTMLImageElement | HTMLVideoElement,
-    ) => {
-      const convertedUrl = convertIPFSUrl(token.img);
-      console.log("Final URL:", convertedUrl);
-
-      try {
-        const cachedMedia = await imageCacheService.lazyLoadImage(
-          convertedUrl,
-          mediaElement,
-        );
-        if (cachedMedia) {
-          mediaElement.src = cachedMedia as string;
-        } else {
-          mediaElement.src = convertedUrl;
-          console.error(`Media not loaded from cache: ${convertedUrl}`);
-        }
-      } catch (error) {
-        console.error("Error loading media:", error);
-        mediaElement.src = convertedUrl;
-      }
-    },
-    [convertIPFSUrl],
-  );
-
   const onSelectTeam = (teamId: number) => {
-    //find team by id
-    const foundTeam = teams.find((team) => {
-      return team.id === teamId;
-    });
+    const foundTeam = teams.find((team) => team.id === teamId);
     if (foundTeam) {
       setSelectedTeam(foundTeam);
     }
   };
 
+  const handleImageLoad = useCallback(
+      async (token: SpaceshipMetadata, mediaElement: HTMLImageElement | HTMLVideoElement) => {
+        let parsedToken;
+        if (typeof token === 'string') {
+          try {
+            parsedToken = JSON.parse(token);
+          } catch (error) {
+            console.error("Failed to parse token JSON:", error);
+            return;
+          }
+        } else {
+          parsedToken = token;
+        }
+        console.warn("Parsed token before conversion:", parsedToken);
+
+        const convertedUrl = convertIPFSUrl(parsedToken.img);
+        if (!convertedUrl) {
+          console.error("Failed to load image or video due to invalid URL.");
+          return;
+        }
+
+        try {
+          const cachedMedia = await imageCacheService.lazyLoadImage(convertedUrl, mediaElement);
+          if (cachedMedia) {
+            mediaElement.src = cachedMedia as string;
+          } else {
+            mediaElement.src = convertedUrl;
+          }
+        } catch (error) {
+          console.error("Error loading media:", error);
+          mediaElement.src = convertedUrl;
+        }
+      },
+      [convertIPFSUrl]
+  );
+
+  if (isLoading) {
+    return <div>Loading league and teams...</div>;
+  }
+
   return (
-    <Fragment>
-      <section className="tf-section place-bet">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12">
-              <h2 className="tf-title pb-20">Place a Bet on a Team</h2>
-            </div>
-          </div>
-          {league && (
+      <Fragment>
+        <section className="tf-section live-auctions">
+          <div className="themesflat-container">
             <div className="row">
-              <div className="col-md-12 text-center mb-4">
-                <h4 className="tf-title pb-20">{`League ${league.id}`}</h4>
+              <div className="col-md-12">
+                <h2 className="tf-title pb-20">Place a Bet on a Team</h2>
               </div>
             </div>
-          )}
-          <div className="row">
-            <div className="col-md-12">
-              <div
-                className="d-flex justify-content-center overflow-auto"
-                style={{ whiteSpace: "nowrap" }}
-              >
-                {teams.length > 0 ? (
-                  teams.map((team) => (
-                    <div
-                      onClick={() => onSelectTeam(team.id)}
-                      key={team.id}
-                      className={`${
-                        selectedTeam?.id === team.id
-                          ? "border border-primary"
-                          : ""
-                      }`}
-                    >
-                      {team.cosmoships.map((token, index) => (
-                        <div key={token.id}>
-                          <ShipCard
-                            token={token as SpaceshipMetadata}
-                            selectedTokenIds={selectedTeam?.cosmoships?.map(
-                              (t) => t!.id as number,
-                            ) || []}
-                            handleSelectToken={() => {}}
-                            swiperRef={swiperRef}
-                            handleImageLoad={handleImageLoad}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center p-3">
-                    <p>No teams available for betting.</p>
+            {league && (
+                <div className="row">
+                  <div className="col-md-12 text-center mb-4">
+                    <h4 className="tf-title pb-20">{`League ${league.id}`}</h4>
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-6 offset-md-3 text-center mt-5">
-              <input
-                type="number"
-                className="form-control-sm mb-3"
-                placeholder="Enter bet amount"
-                value={betAmount}
-                onChange={(e) => setBetAmount(Number(e.target.value))}
-                disabled={!bettingAllowed}
-                style={{ width: "60%", display: "inline-block" }} // Smaller input
-              />
-            </div>
-            <div className="col-md-6 offset-md-3 text-center">
-              <button
-                className={`btn btn-lg btn-primary place-bet-button ${
-                  bettingAllowed ? "enabled" : "disabled"
-                }`}
-                onClick={handleBet}
-                disabled={
-                  !bettingAllowed || selectedTeam?.id === null || betAmount <= 0
-                }
-              >
-                Place Bet
-              </button>
-            </div>
-            {notification && (
-              <div className="col-md-8 offset-md-2 text-center mt-3">
-                <p className={`alert alert-${notification.type}`}>
-                  {notification.message}
-                </p>
-              </div>
+                </div>
             )}
-          </div>
-          <div className="row">
-            <div className="col-md-8 offset-md-2 text-center mt-4">
-              <button
-                className="btn btn-secondary"
-                onClick={handleInitializeLeague}
-              >
-                1. Initialize League TEST
-              </button>
+            <div className="row">
+              <div className="col-md-12">
+                <div className="d-flex justify-content-center overflow-auto" style={{ whiteSpace: "nowrap" }}>
+                  {teams.length > 0 ? (
+                      teams.map((team) => (
+                          <div
+                              onClick={() => onSelectTeam(team.id)}
+                              key={team.id}
+                              className={`${selectedTeam?.id === team.id ? "border border-primary" : ""}`}
+                          >
+                            {team.cosmoships.map((token, index) => (
+                                <div key={token.id}>
+                                  <ShipCard
+                                      token={token as SpaceshipMetadata}
+                                      selectedTokenIds={selectedTeam?.cosmoships?.map((t) => t!.id as number) || []}
+                                      handleSelectToken={() => {}}
+                                      swiperRef={swiperRef}
+                                      handleImageLoad={handleImageLoad}
+                                  />
+                                </div>
+                            ))}
+                          </div>
+                      ))
+                  ) : (
+                      <div className="text-center p-3">
+                        <p>No teams available for betting.</p>
+                      </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="col-md-8 offset-md-2 text-center mt-3">
-              <button
-                className="btn btn-secondary" // Using a red button for distinction
-                onClick={handleEndEnrollment}
-              >
-                2. End enrollment
-              </button>
+            <div className="row">
+              <div className="col-md-6 offset-md-3 text-center mt-5">
+                <input
+                    type="number"
+                    className="form-control-sm mb-3"
+                    placeholder="Enter bet amount"
+                    value={betAmount}
+                    onChange={(e) => setBetAmount(Number(e.target.value))}
+                    disabled={!bettingAllowed}
+                    style={{ width: "60%", display: "inline-block" }}
+                />
+              </div>
+              <div className="col-md-6 offset-md-3 text-center">
+                <button
+                    className={`btn btn-lg btn-primary place-bet-button ${bettingAllowed ? "enabled" : "disabled"}`}
+                    onClick={handleBet}
+                    disabled={!bettingAllowed || !selectedTeam || betAmount <= 0}
+                >
+                  Place Bet
+                </button>
+              </div>
+              {notification && (
+                  <div className="col-md-8 offset-md-2 text-center mt-3">
+                    <p className={`alert alert-${notification.type}`}>{notification.message}</p>
+                  </div>
+              )}
+            </div>
+            <div className="row">
+              <div className="col-md-8 offset-md-2 text-center mt-4">
+                <button className="btn btn-secondary" onClick={handleInitializeLeague}>
+                  1. Initialize League TEST
+                </button>
+              </div>
+              <div className="col-md-8 offset-md-2 text-center mt-3">
+                <button className="btn btn-secondary" onClick={handleEndEnrollment}>
+                  2. End enrollment
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </Fragment>
+        </section>
+      </Fragment>
   );
 };
 

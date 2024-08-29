@@ -15,10 +15,10 @@ interface Team {
         type: string;
         color: string;
         tool: string;
-        capacity: string;
-        attack: string;
-        speed: string;
-        shield: string;
+        capacity: string | number;
+        attack: string | number;
+        speed: string | number;
+        shield: string | number;
     }>;
 }
 
@@ -47,7 +47,7 @@ const EnrollTeam: React.FC = () => {
                             const metadata = await getIPFSTokenMetadata(tokenId);
                             return {
                                 id: tokenId,
-                                img: convertIPFSUrl(metadata.img),
+                                img: metadata.img ? convertIPFSUrl(metadata.img) : '',
                                 model: metadata.model || "Unknown",
                                 name: metadata.name || `Spaceship #${tokenId}`,
                                 type: metadata.type || "Unknown",

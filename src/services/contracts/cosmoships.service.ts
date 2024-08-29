@@ -170,16 +170,23 @@ const useMintService = () => {
     }
   };
 
-  const convertIPFSUrl = useCallback((url: string): string => {
-    if (!url) {
-      return url;
+  const convertIPFSUrl = useCallback((url: string | undefined): string => {
+    if (!url || typeof url !== 'string') {
+      console.error('Invalid IPFS URL:', url);
+      return '';
     }
+
     if (url.startsWith("https://ipfs.io/ipfs/")) {
       return url;
     }
-    // Otherwise, parse the URL and format it correctly.
-    const path = url.split("/").slice(-2).join("/");
-    return `https://ipfs.io/ipfs/${path}`;
+
+    try {
+      const path = url.split("/").slice(-2).join("/");
+      return `https://ipfs.io/ipfs/${path}`;
+    } catch (error) {
+      console.error('Error converting IPFS URL:', error);
+      return '';
+    }
   }, []);
 
   const getIPFSTokenMetadata = async (tokenId: number): Promise<Partial<SpaceshipMetadata>> => {

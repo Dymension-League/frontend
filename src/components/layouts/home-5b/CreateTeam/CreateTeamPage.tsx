@@ -104,6 +104,10 @@ const CreateTeam = () => {
       mediaElement: HTMLImageElement | HTMLVideoElement,
     ) => {
       const convertedUrl = convertIPFSUrl(token.img);
+        if (!convertedUrl) {
+            console.error("Failed to load image or video due to invalid URL.");
+            return;
+        }
       console.log("Final URL:", convertedUrl);
 
       try {
@@ -230,18 +234,18 @@ const CreateTeam = () => {
                                 {ownedTokens.slice(0, visible).map((token, index) => (
                                     <div key={index} className="fl-item col-xl-3 col-lg-4 col-md-6 col-sm-6">
                                         <div
-                                            className={`sc-card-product ${selectedTokenIds.includes(token.id) ? 'selected-card' : ''}`}
-                                            onClick={() => handleSelectToken(token.id)}
+                                            className={`sc-card-product ${token.id !== undefined && selectedTokenIds.includes(token.id) ? 'selected-card' : ''}`}
+                                            onClick={() => token.id !== undefined && handleSelectToken(token.id)}
                                         >
                                             <div className="card-media">
                                                 <video
-                                                    ref={el => el && handleImageLoad(token, el)}
-                                                    src={token.img}
+                                                    ref={el => el && token.id !== undefined && handleImageLoad(token as SpaceshipMetadata, el)}
+                                                    src={token.img || ''}
                                                     autoPlay loop muted
                                                 />
                                             </div>
                                             <div className="card-title">
-                                                <h5>{token.name}</h5>
+                                            <h5>{token.name}</h5>
                                             </div>
                                             <div className="meta-info">
                                                 <div className="author">

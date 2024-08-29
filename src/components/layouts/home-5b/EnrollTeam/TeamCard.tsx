@@ -10,15 +10,15 @@ import useMintService from "../../../../services/contracts/cosmoships.service";
 interface Ship {
     id: number;
     img: string;
+    model: string;
     name: string;
     type: string;
-    model: string;
     color: string;
     tool: string;
-    capacity: string;
-    attack: string;
-    speed: string;
-    shield: string;
+    capacity: string | number;
+    attack: string | number;
+    speed: string | number;
+    shield: string | number;
 }
 
 interface Team {
@@ -36,8 +36,6 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, onEnroll }) => {
     const { getIPFSTokenMetadata, convertIPFSUrl } = useMintService();
     const [loadedShips, setLoadedShips] = useState<Ship[]>(team.ships);
     const teamIdString = team.teamId.toString();
-
-    console.log('Team ID:', teamIdString);
 
     const handleImageLoad = useCallback(async (ship: Ship, mediaElement: HTMLImageElement | HTMLVideoElement) => {
         try {
@@ -58,19 +56,23 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, onEnroll }) => {
             if (loadedShips.every(ship => ship.img === '')) {
                 const shipsWithMetadata = await Promise.all(
                     team.ships.map(async (ship) => {
-                        const metadata = await getIPFSTokenMetadata(ship.id);
+                        let metadata = await getIPFSTokenMetadata(ship.id);
+
+                        if (typeof metadata === 'string') {
+                            metadata = JSON.parse(metadata);
+                        }
                         return {
                             id: ship.id,
-                            img: convertIPFSUrl(metadata.img),
-                            name: metadata.name,
-                            type: metadata.type,
-                            model: metadata.model,
-                            color: metadata.color,
-                            tool: metadata.tool,
-                            capacity: metadata.capacity,
-                            attack: metadata.attack,
-                            speed: metadata.speed,
-                            shield: metadata.shield,
+                            img: metadata.img ? convertIPFSUrl(metadata.img) : '',
+                            name: metadata.name || 'Unknown Ship',
+                            type: metadata.type || 'Unknown Type',
+                            model: metadata.model || 'Unknown Model',
+                            color: metadata.color || 'Unknown Color',
+                            tool: metadata.tool || 'Unknown Tool',
+                            capacity: metadata.capacity ?? 0,
+                            attack: metadata.attack ?? 0,
+                            speed: metadata.speed ?? 0,
+                            shield: metadata.shield ?? 0,
                         };
                     })
                 );
@@ -78,74 +80,72 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, onEnroll }) => {
             }
         };
 
+
         fetchMetadata();
-    }, [team.ships, getIPFSTokenMetadata, convertIPFSUrl, loadedShips]);
+    }, [team.ships, getIPFSTokenMetadata, convertIPFSUrl]);
 
     return (
-        <div className="team-card-container">
+        <div>
             <h3>{team.teamName} - Team ID: {teamIdString}</h3>
-            <div className="team-content">
-                <Swiper
-                    modules={[Navigation, Pagination, Scrollbar, A11y]}
-                    spaceBetween={30}
-                    breakpoints={{
-                        0: { slidesPerView: 1 },
-                        767: { slidesPerView: 2 },
-                        991: { slidesPerView: 3 },
-                        1300: { slidesPerView: 4 },
-                    }}
-                    navigation
-                    pagination={{ clickable: true }}
-                    scrollbar={{ draggable: true }}
-                    className="team-swiper"
-                >
-                    {loadedShips.map((ship, index) => (
-                        <SwiperSlide key={index}>
-                            <div className="sc-card-product">
-                                <div className="card-media">
-                                    <video
-                                        ref={el => el && handleImageLoad(ship, el)}
-                                        src={ship.img}
-                                        autoPlay loop muted
-                                    />
+            <Swiper
+                modules={[Navigation, Pagination, Scrollbar, A11y]}
+                spaceBetween={30}
+                breakpoints={{
+                    0: {slidesPerView: 1},
+                    767: {slidesPerView: 2},
+                    991: {slidesPerView: 3},
+                    1300: {slidesPerView: 4},
+                }}
+                navigation
+                pagination={{clickable: true}}
+                scrollbar={{draggable: true}}
+            >
+                {loadedShips.map((ship, index) => (
+                    <SwiperSlide key={index}>
+                        <div className="sc-card-product">
+                            <div className="card-media">
+                                <video
+                                    ref={el => el && handleImageLoad(ship, el)}
+                                    src={ship.img}
+                                    autoPlay loop muted
+                                />
+                            </div>
+                            <div className="card-title">
+                                <h5>{ship.name}</h5>
+                            </div>
+                            <div className="card-bottom style-explode">
+                                <div className="attribute-item">
+                                    <span>Color</span>
+                                    <h6>{ship.color}</h6>
                                 </div>
-                                <div className="card-title">
-                                    <h5>{ship.name}</h5>
-                                </div>
-                                <div className="card-bottom style-explode">
-                                    <div className="attribute-item">
-                                        <span>Color</span>
-                                        <h6>{ship.color}</h6>
-                                    </div>
-                                    <div className="attribute-item">
-                                        <span>Tool</span>
-                                        <h6>{ship.tool}</h6>
-                                    </div>
-                                </div>
-                                <div className="card-bottom style-explode">
-                                    <div className="attribute-item">
-                                        <span>Capacity</span>
-                                        <h6>{ship.capacity}</h6>
-                                    </div>
-                                    <div className="attribute-item">
-                                        <span>Attack</span>
-                                        <h6>{ship.attack}</h6>
-                                    </div>
-                                    <div className="attribute-item">
-                                        <span>Speed</span>
-                                        <h6>{ship.speed}</h6>
-                                    </div>
-                                    <div className="attribute-item">
-                                        <span>Shield</span>
-                                        <h6>{ship.shield}</h6>
-                                    </div>
+                                <div className="attribute-item">
+                                    <span>Tool</span>
+                                    <h6>{ship.tool}</h6>
                                 </div>
                             </div>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
-                <button className="enroll-button" onClick={() => onEnroll(team.teamId)}>Enroll to League</button>
-            </div>
+                            <div className="card-bottom style-explode">
+                                <div className="attribute-item">
+                                    <span>Capacity</span>
+                                    <h6>{ship.capacity}</h6>
+                                </div>
+                                <div className="attribute-item">
+                                    <span>Attack</span>
+                                    <h6>{ship.attack}</h6>
+                                </div>
+                                <div className="attribute-item">
+                                    <span>Speed</span>
+                                    <h6>{ship.speed}</h6>
+                                </div>
+                                <div className="attribute-item">
+                                    <span>Shield</span>
+                                    <h6>{ship.shield}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+            <button className="enroll-button" onClick={() => onEnroll(team.teamId)}>Enroll to League</button>
         </div>
     );
 };
