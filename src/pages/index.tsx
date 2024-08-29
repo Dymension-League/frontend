@@ -38,6 +38,7 @@ import MintShipPage from "./MintShip/MintShipPage";
 import HomePage from "./Home/HomePage";
 import NewTeam from "../components/layouts/home-5b/CreateTeam/NewTeam";
 import EnrollTeamPage from "./EnrollTeam/EnrollTeamPage";
+import NotFound from "./NotFound";
 
 // Define the type for a route
 interface Route {
@@ -45,12 +46,12 @@ interface Route {
   component: React.ReactNode;
 }
 
-// Check the environment variable to determine if we are in production
 const isProdEnv = process.env.REACT_APP_PROD_ENV === "true";
 
 // Define routes based on environment
 const routes: Route[] = isProdEnv
-  ? [{ path: "/", component: <HomePage /> }]
+  ? [{ path: "/", component: <HomePage /> },
+    { path: '*', component: <NotFound /> },]
   : [
       { path: "/", component: <HomePage /> },
       { path: "/home-02", component: <Home02 /> },
@@ -90,6 +91,7 @@ const routes: Route[] = isProdEnv
       { path: "/faq", component: <FAQ /> },
       { path: "/contact-01", component: <Contact01 /> },
       { path: "/contact-02", component: <Contact02 /> },
+      { path: '*', component: <NotFound /> },
     ];
 
 export default routes;
