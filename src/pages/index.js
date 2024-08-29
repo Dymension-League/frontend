@@ -33,6 +33,7 @@ import Contact02 from "./Contact02";
 import Home05b from "./Home05b";
 import CreateTeam from "../components/layouts/home-5b/CreateTeam/CreateTeam";
 import CreateTeamPage from "./CreateTeam/CreateTeamPage";
+import CreateBetPage from "./Bet/BetPage";
 import MintShipPage from "./MintShip/MintShipPage";
 import MintShipsPage from "./MintShipsPage"
 import HomePage from "./Home/HomePage";
@@ -63,6 +64,7 @@ const routes = [
   { path: '/activity-01', component: <Activity01 />},
   { path: '/activity-02', component: <Activity02 />},
   { path: '/blog', component: <Blog />},
+  { path: '/bet', component: <CreateBetPage />},
   { path: '/blog-details', component: <BlogDetails />},
   { path: '/help-center', component: <HelpCenter />},
   { path: '/authors-01', component: <Authors01 />},
