@@ -5,7 +5,7 @@ import config from "../../config";
 import imageCacheService from "../ImageCacheService";
 import { useCallback } from "react";
 import useGetContract from "./use-get-contract";
-import { SpaceshipMetadata } from "../../components/layouts/home-5b/CreateTeam/CreateTeamPage";
+import { Ship } from "../../components/layouts/home-5b/EnrollTeam/TeamCard";
 
 const cosmoShipsAbi = CosmoShips!.abi;
 const IPFS_GATEWAY = config.ipfsGateway;
@@ -189,7 +189,7 @@ const useMintService = () => {
     }
   }, []);
 
-  const getIPFSTokenMetadata = async (tokenId: number): Promise<Partial<SpaceshipMetadata>> => {
+  const getIPFSTokenMetadata = async (tokenId: number): Promise<Partial<Ship>> => {
     const cacheKey = `metadata-${tokenId}`;
     const cachedMetadata = await imageCacheService.getCachedImage(cacheKey);
     if (cachedMetadata) {
