@@ -1,6 +1,10 @@
-// HeaderMenus/headerMenus.js
+export interface HeaderMenuItem {
+  id: number;
+  name: string;
+  links: string;
+}
 
-const headerMenus = [
+const headerMenus: HeaderMenuItem[] = [
   {
     id: 1,
     name: "Mint",
@@ -26,11 +30,11 @@ const headerMenus = [
     name: "Bet",
     links: "/bet",
   },
-  //     {
-  //         id: 6,
-  //         name: 'Leaderboard',
-  //         links: '/leaderboard'
-  //     }
+  // {
+  //     id: 6,
+  //     name: 'Leaderboard',
+  //     links: '/leaderboard'
+  // }
 ];
 
 export default headerMenus;
