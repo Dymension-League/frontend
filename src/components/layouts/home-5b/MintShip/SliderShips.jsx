@@ -27,7 +27,7 @@ const SliderShips = () => {
                                 <FaTwitter size={20} style={{marginRight: '10px'}}/>
                                 <span>Follow on Twitter</span>
                             </a>
-                            <a href="https://discord.gg/Cct4eD9Y" target="_blank"
+                            <a href="https://discord.gg/XfJJXRMB" target="_blank"
                                rel="noopener noreferrer"
                                className="sc-button header-slider style style-1 note fl-button pri-1">
                                 <FaDiscord size={20} style={{marginRight: '10px'}}/>
