@@ -29,12 +29,12 @@ const NewFooter = () => {
     ];
 
     const socialList = [
-        { icon: <FaTwitter />, link: "#" },
+        { icon: <FaTwitter />, link: "https://x.com/DymensionLeague" },
+        { icon: <FaDiscord />, link: "https://discord.gg/XfJJXRMB" },
         { icon: <FaFacebook />, link: "#" },
         { icon: <FaTelegramPlane />, link: "#" },
         { icon: <FaYoutube />, link: "#" },
         { icon: <FaTiktok />, link: "#" },
-        { icon: <FaDiscord />, link: "#" },
     ];
 
     const [isVisible, setIsVisible] = useState(false);
