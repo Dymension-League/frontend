@@ -5,8 +5,6 @@ import React, {
   useRef,
   Fragment,
 } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import "swiper/scss";
 import "swiper/scss/navigation";
 import "swiper/scss/pagination";
@@ -17,30 +15,16 @@ import "../styles/Home05b.css";
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import config from "../../../../config";
 import { Link } from 'react-router-dom';
-import ShipCard from "./ShipCard";
+import { Ship } from "../EnrollTeam/TeamCard";
 
 interface Notification {
   message: string;
   type: "success" | "error";
 }
 
-export interface SpaceshipMetadata {
-  id: number;
-  name: string;
-  img: string;
-  type: string;
-  model: string;
-  color: string;
-  tool: string;
-  capacity: number;
-  attack: number;
-  speed: number;
-  shield: number;
-}
-
 export const fetchTokensWithMetadata = async (
     tokenIds: number[],
-    fetchTokens: (tokenId: number) => Promise<Partial<SpaceshipMetadata>>,
+    fetchTokens: (tokenId: number) => Promise<Partial<Ship>>,
 ) =>
     await Promise.all(
         tokenIds.map(async (tokenId) => {
@@ -63,7 +47,7 @@ const CreateTeam = () => {
         convertIPFSUrl,
     } = useMintService();
     const [teamName, setTeamName] = useState<string>('');
-    const [ownedTokens, setOwnedTokens] = useState<Partial<SpaceshipMetadata>[]>(
+    const [ownedTokens, setOwnedTokens] = useState<Partial<Ship>[]>(
         [],
     );
     const [selectedTokenIds, setSelectedTokenIds] = useState<number[]>([]);
@@ -100,7 +84,7 @@ const CreateTeam = () => {
 
   const handleImageLoad = useCallback(
     async (
-      token: SpaceshipMetadata,
+      token: Ship,
       mediaElement: HTMLImageElement | HTMLVideoElement,
     ) => {
       const convertedUrl = convertIPFSUrl(token.img);
@@ -240,7 +224,7 @@ const CreateTeam = () => {
                                         >
                                             <div className="card-media">
                                                 <video
-                                                    ref={el => el && token.id !== undefined && handleImageLoad(token as SpaceshipMetadata, el)}
+                                                    ref={el => el && token.id !== undefined && handleImageLoad(token as Ship, el)}
                                                     src={token.img || ''}
                                                     autoPlay loop muted
                                                 />
