@@ -38,10 +38,5 @@ if (
     ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "https://ipfs.io/ipfs/",
   };
 }
-console.log("Config loaded:", {
-  ...config,
-  mintAddress: config.mintAddress,
-  gameLeagueAddress: config.gameLeagueAddress,
-});
 
 export default config;

@@ -20,6 +20,4 @@ if (process.env.REACT_APP_LOCAL_GAMELEAGUE_ADDRESS) {
   }
 }
 
-console.log(JSON.stringify(GameLeague?.abi, null, 2))
-console.log("Loaded contract artifacts:", { CosmoShips, GameLeague });
 export { CosmoShips, GameLeague };

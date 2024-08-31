@@ -6,11 +6,11 @@ import CardModal from '../../CardModal';
 import 'swiper/scss';
 import 'swiper/scss/navigation';
 import 'swiper/scss/pagination';
-import spaceshipsData from "../../../../assets/space-ships/spaceships";
 import imageCacheService from "../../../../services/ImageCacheService";
-import '../styles/Home05b.css'; // Import the CSS file
+import '../styles/Home05b.css';
 
 const LiveAuction = () => {
+    const [spaceshipsData, setSpaceshipsData] = useState([]);
     const [loadedImages, setLoadedImages] = useState([]);
     const [selectedSpaceships, setSelectedSpaceships] = useState([]);
     const [teamName, setTeamName] = useState('');
@@ -18,13 +18,20 @@ const LiveAuction = () => {
     const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
-        const loadImages = async () => {
-            const urls = spaceshipsData.map((spaceship) => spaceship.img);
-            const cachedImages = await imageCacheService.loadImages(urls);
-            setLoadedImages(cachedImages);
+        const fetchSpaceshipsData = async () => {
+            try {
+                const response = await fetch("/assets/space-ships/spaceships.json");
+                const data = await response.json();
+                setSpaceshipsData(data);
+                const urls = data.map((spaceship) => spaceship.img);
+                const cachedImages = await imageCacheService.loadImages(urls);
+                setLoadedImages(cachedImages);
+            } catch (error) {
+                console.error("Error loading spaceships data:", error);
+            }
         };
 
-        loadImages();
+        fetchSpaceshipsData();
     }, []);
 
     const handleSelectSpaceship = (spaceship) => {

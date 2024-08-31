@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
+import ResizeObserver from "resize-observer-polyfill";
 import "swiper/scss";
 import "swiper/scss/navigation";
 import "swiper/scss/pagination";
@@ -33,6 +34,8 @@ interface TeamCardProps {
   buttonText?: string;
   disabled?: boolean;
   onSelectTeam?: (teamId: number) => void;
+	productClassName?: string;
+	containerClassName?: string;
 }
 
 const TeamCard: React.FC<TeamCardProps> = ({
@@ -41,9 +44,15 @@ const TeamCard: React.FC<TeamCardProps> = ({
   onAction,
   disabled,
   onSelectTeam,
+	productClassName = '',
+	containerClassName = ''
 }) => {
   const { getIPFSTokenMetadata, convertIPFSUrl } = useMintService();
   const [loadedShips, setLoadedShips] = useState<Ship[]>(team.ships);
+  const [swiperContainer, setSwiperContainer] = useState<HTMLDivElement | null>(
+    null,
+  );
+
   const teamIdString = team.teamId.toString();
 
   const handleImageLoad = useCallback(
@@ -98,82 +107,101 @@ const TeamCard: React.FC<TeamCardProps> = ({
     fetchMetadata();
   }, [team.ships, getIPFSTokenMetadata, convertIPFSUrl, loadedShips]);
 
+  useEffect(() => {
+    if (swiperContainer) {
+      const observer = new ResizeObserver(() => {
+        swiperContainer.dispatchEvent(new Event("resize"));
+      });
+      observer.observe(swiperContainer);
+
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [swiperContainer]);
+
   return (
-    <div className="col-md-12 mb-5" onClick={() => onSelectTeam?.(team.teamId)}>
-      <h3 className="mb-4">
-        {team.teamName} - Team ID: {teamIdString}
-      </h3>
-      <Swiper
-        modules={[Navigation, Pagination, Scrollbar, A11y]}
-        spaceBetween={30}
-        breakpoints={{
-          0: { slidesPerView: 1 },
-          767: { slidesPerView: 2 },
-          991: { slidesPerView: 3 },
-          1300: { slidesPerView: 4 },
-        }}
-        navigation
-        pagination={{ clickable: true }}
-        scrollbar={{ draggable: true }}
+    <div ref={setSwiperContainer}>
+      <div
+        className={containerClassName || "col-md-12 mb-5"}
+        onClick={() => onSelectTeam?.(team.teamId)}
       >
-        {loadedShips.map((ship, index) => (
-          <SwiperSlide key={index}>
-            <div className="sc-card-product">
-              <div className="card-media">
-                <video
-                  ref={(el) => el && handleImageLoad(ship, el)}
-                  src={ship.img}
-                  autoPlay
-                  loop
-                  muted
-                />
-              </div>
-              <div className="card-title">
-                <h5>{ship.name}</h5>
-              </div>
-              <div className="card-bottom style-explode">
-                <div className="attribute-item">
-                  <span>Color</span>
-                  <h6>{ship.color}</h6>
-                </div>
-                <div className="attribute-item">
-                  <span>Tool</span>
-                  <h6>{ship.tool}</h6>
-                </div>
-              </div>
-              <div className="card-bottom style-explode">
-                <div className="attribute-item">
-                  <span>Capacity</span>
-                  <h6>{ship.capacity}</h6>
-                </div>
-                <div className="attribute-item">
-                  <span>Attack</span>
-                  <h6>{ship.attack}</h6>
-                </div>
-                <div className="attribute-item">
-                  <span>Speed</span>
-                  <h6>{ship.speed}</h6>
-                </div>
-                <div className="attribute-item">
-                  <span>Shield</span>
-                  <h6>{ship.shield}</h6>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      {onAction && (
-        <button
-          className={`enroll-button ${disabled === true ? "disabled" : "enabled"}`}
-          onClick={() => onAction(team.teamId)}
+        <h3 className="mb-4">
+          {team.teamName} - Team ID: {teamIdString}
+        </h3>
+        <Swiper
+          modules={[Navigation, Pagination, Scrollbar, A11y]}
+          spaceBetween={30}
+          breakpoints={{
+            0: { slidesPerView: 1 },
+            767: { slidesPerView: 2 },
+            991: { slidesPerView: 3 },
+            1300: { slidesPerView: 4 },
+          }}
+          navigation
+          pagination={{ clickable: true }}
+          scrollbar={{ draggable: true }}
         >
-          {buttonText || "Enroll to League"}
-        </button>
-      )}
+          {loadedShips.map((ship, index) => (
+            <SwiperSlide key={index}>
+              <div className={`sc-card-product ${productClassName}`}>
+                <div className="card-media">
+                  <video
+                    ref={(el) => el && handleImageLoad(ship, el)}
+                    src={ship.img}
+                    autoPlay
+                    loop
+                    muted
+                    controls
+                    playsInline
+                  />
+                </div>
+                <div className="card-title">
+                  <h5>{ship.name}</h5>
+                </div>
+                <div className="card-bottom style-explode">
+                  <div className="attribute-item">
+                    <span>Color</span>
+                    <h6>{ship.color}</h6>
+                  </div>
+                  <div className="attribute-item">
+                    <span>Tool</span>
+                    <h6>{ship.tool}</h6>
+                  </div>
+                </div>
+                <div className="card-bottom style-explode">
+                  <div className="attribute-item">
+                    <span>Capacity</span>
+                    <h6>{ship.capacity}</h6>
+                  </div>
+                  <div className="attribute-item">
+                    <span>Attack</span>
+                    <h6>{ship.attack}</h6>
+                  </div>
+                  <div className="attribute-item">
+                    <span>Speed</span>
+                    <h6>{ship.speed}</h6>
+                  </div>
+                  <div className="attribute-item">
+                    <span>Shield</span>
+                    <h6>{ship.shield}</h6>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        {onAction && (
+          <button
+            className={`enroll-button ${disabled === true ? "disabled" : "enabled"}`}
+            onClick={() => onAction(team.teamId)}
+          >
+            {buttonText || "Enroll to League"}
+          </button>
+        )}
+      </div>
     </div>
   );
 };
 
 export default TeamCard;
-

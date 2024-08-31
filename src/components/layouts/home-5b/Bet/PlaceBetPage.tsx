@@ -6,7 +6,6 @@ import useGameLeagueService, {
 } from "../../../../services/contracts/gameleague.service";
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import { fetchTokensWithMetadata } from "../CreateTeam/CreateTeamPage";
-import imageCacheService from "../../../../services/ImageCacheService";
 import TeamCard, { Ship, Team } from "../EnrollTeam/TeamCard";
 
 interface Notification {
@@ -103,6 +102,9 @@ const PlaceBet: React.FC = () => {
     try {
       await placeBet(league!.id, selectedTeam.teamId, betAmount);
       notify("Bet placed successfully!", "success");
+      setSelectedTeam(null);
+      setBetAmount(0);
+      setBettingAllowed(false); // Disable betting after placing a bet
     } catch (error) {
       console.error("Error placing bet:", error);
       notify("Failed to place bet. Please try again.", "error");
@@ -145,6 +147,7 @@ const PlaceBet: React.FC = () => {
     const foundTeam = teams.find((team) => team.teamId === teamId);
     if (foundTeam) {
       setSelectedTeam(foundTeam);
+      setBetAmount(0);
     }
   };
 
@@ -167,31 +170,37 @@ const PlaceBet: React.FC = () => {
         </div>
         {teams.length > 0 ? (
           teams.map((team, index) => (
-            <div key={index} className="row mb-2 align-items-center">
+            <div key={index} className="row mb-4 align-items-center">
+              <div
+                className={`col-md-12 p-4 mb-5 ${selectedTeam && selectedTeam.teamId === team.teamId ? "selected-card" : ""}`}
+              >
                 <TeamCard
+                  containerClassName="col-md-12"
+                  productClassName="mb-0"
                   onSelectTeam={onSelectTeam}
-                  buttonText="Select Team"
                   team={team}
                 />
-              {selectedTeam && selectedTeam.teamId === team.teamId && (
-                <div className="col-md-4 offset-md-3 d-flex justify-content-between align-items-center">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Enter bet amount"
-                    value={betAmount}
-                    onChange={(e) => setBetAmount(Number(e.target.value))}
-                    disabled={!bettingAllowed}
-                    style={{ width: "60%" }}
-                  />
-                  <button
-                    onClick={handleBet}
-                    disabled={!bettingAllowed || betAmount <= 0}
-                  >
-                    Place Bet
-                  </button>
-                </div>
-              )}
+              </div>
+              <div className="col-md-4 offset-md-3 d-flex justify-content-between align-items-center">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Enter bet amount"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(Number(e.target.value))}
+                  disabled={
+                    (!bettingAllowed ||
+                      selectedTeam?.teamId !== team.teamId) === true
+                  }
+                  style={{ width: "60%" }}
+                />
+                <button
+                  onClick={handleBet}
+                  className={`enroll-button ${(!bettingAllowed || betAmount <= 0 || selectedTeam?.teamId !== team.teamId) === true ? "disabled" : "enabled"}`}
+                >
+                  Place Bet
+                </button>
+              </div>
             </div>
           ))
         ) : (
@@ -220,4 +229,3 @@ const PlaceBet: React.FC = () => {
 };
 
 export default PlaceBet;
-

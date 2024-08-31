@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
-import Countdown from 'react-countdown';
 import CardModal from '../../src/components/layouts/CardModal';
 
 import 'swiper/scss';
@@ -55,9 +53,7 @@ const SpaceshipAuctions = ({ data }) => {
                                                 <div className="slider-item">
                                                     <div className="sc-card-product">
                                                         <div className="card-media">
-                                                            {/*<Link to="/item-details-01">*/}
-                                                                <video src={item.img} autoPlay loop muted />
-                                                            {/*</Link>*/}
+                                                            <video src={item.img} autoPlay loop controls muted playsInline/>
                                                         </div>
                                                         <div className="card-title">
                                                             <h5>{item.name}</h5>
