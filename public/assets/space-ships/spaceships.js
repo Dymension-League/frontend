@@ -131,5 +131,4 @@ const spaceshipsData = [
     },
 ];
 
-export const spaceshipImages = spaceshipsData.map(ship => ship.img);
 export default spaceshipsData;
