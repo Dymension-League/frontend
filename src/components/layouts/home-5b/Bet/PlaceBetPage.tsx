@@ -6,7 +6,6 @@ import useGameLeagueService, {
 } from "../../../../services/contracts/gameleague.service";
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import { fetchTokensWithMetadata } from "../CreateTeam/CreateTeamPage";
-import imageCacheService from "../../../../services/ImageCacheService";
 import TeamCard, { Ship, Team } from "../EnrollTeam/TeamCard";
 
 interface Notification {
@@ -167,12 +166,18 @@ const PlaceBet: React.FC = () => {
         </div>
         {teams.length > 0 ? (
           teams.map((team, index) => (
-            <div key={index} className="row mb-2 align-items-center">
+            <div key={index} className="row mb-4 align-items-center">
+              <div
+                className={`col-md-12 p-4 mb-5 ${selectedTeam && selectedTeam.teamId === team.teamId ? "selected-card" : ""}`}
+              >
                 <TeamCard
+                  containerClassName="col-md-12"
+                  productClassName="mb-0"
                   onSelectTeam={onSelectTeam}
                   buttonText="Select Team"
                   team={team}
                 />
+              </div>
               {selectedTeam && selectedTeam.teamId === team.teamId && (
                 <div className="col-md-4 offset-md-3 d-flex justify-content-between align-items-center">
                   <input
@@ -220,4 +225,3 @@ const PlaceBet: React.FC = () => {
 };
 
 export default PlaceBet;
-
