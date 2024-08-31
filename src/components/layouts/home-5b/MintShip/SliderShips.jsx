@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/scss';
 import 'swiper/scss/navigation';
 import 'swiper/scss/pagination';
-import spaceshipsData from "../../../../assets/space-ships/spaceships";
 import { FaDiscord, FaTwitter } from "react-icons/fa";
 
 const SliderShips = () => {
+    const [spaceshipsData, setSpaceshipsData] = useState([]);
+
+    useEffect(() => {
+        const fetchSpaceshipsData = async () => {
+            try {
+                const response = await fetch("/assets/space-ships/spaceships.json");
+                const data = await response.json();
+                setSpaceshipsData(data);
+            } catch (error) {
+                console.error("Error loading spaceships data:", error);
+            }
+        };
+
+        fetchSpaceshipsData();
+    }, []);
+
     const subtitle = 'Dymension League Marketplace';
     const title = 'Mint, Trade, and Command Your Fleet of Extraordinary Space Vessels';
     const description = 'Join the Dymension League, where you can mint unique starships, form alliances, and conquer the cosmos. Your adventure starts here!';

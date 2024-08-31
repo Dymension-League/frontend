@@ -102,6 +102,8 @@ const PlaceBet: React.FC = () => {
     try {
       await placeBet(league!.id, selectedTeam.teamId, betAmount);
       notify("Bet placed successfully!", "success");
+      setSelectedTeam(null);
+      setBetAmount(0);
       setBettingAllowed(false); // Disable betting after placing a bet
     } catch (error) {
       console.error("Error placing bet:", error);

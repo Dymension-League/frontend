@@ -6,25 +6,32 @@ import CardModal from '../../CardModal';
 import 'swiper/scss';
 import 'swiper/scss/navigation';
 import 'swiper/scss/pagination';
-import spaceshipsData from "../../../../assets/space-ships/spaceships";
 import imageCacheService from "../../../../services/ImageCacheService";
 import '../styles/Home05b.css';
 
-    const CreateTeam = () => {
-        const [loadedImages, setLoadedImages] = useState([]);
-        const [selectedSpaceships, setSelectedSpaceships] = useState([]);
-        const [teamName, setTeamName] = useState('');
-        const [notification, setNotification] = useState('');
-        const [modalShow, setModalShow] = useState(false);
+const CreateTeam = () => {
+    const [spaceshipsData, setSpaceshipsData] = useState([]);
+    const [loadedImages, setLoadedImages] = useState([]);
+    const [selectedSpaceships, setSelectedSpaceships] = useState([]);
+    const [teamName, setTeamName] = useState('');
+    const [notification, setNotification] = useState('');
+    const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
-        const loadImages = async () => {
-            const urls = spaceshipsData.map((spaceship) => spaceship.img);
-            const cachedImages = await imageCacheService.loadImages(urls);
-            setLoadedImages(cachedImages);
+        const fetchSpaceshipsData = async () => {
+            try {
+                const response = await fetch("/assets/space-ships/spaceships.json");
+                const data = await response.json();
+                setSpaceshipsData(data);
+                const urls = data.map((spaceship) => spaceship.img);
+                const cachedImages = await imageCacheService.loadImages(urls);
+                setLoadedImages(cachedImages);
+            } catch (error) {
+                console.error("Error loading spaceships data:", error);
+            }
         };
 
-        loadImages();
+        fetchSpaceshipsData();
     }, []);
 
         const handleSelectSpaceship = (spaceship) => {
@@ -109,7 +116,7 @@ import '../styles/Home05b.css';
                                                         <div className="sc-card-product">
                                                             <div className="card-media">
                                                                 <Link to="#">
-                                                                    <video src={item.img} autoPlay loop muted/>
+                                                                    <video src={item.img} autoPlay loop controls muted/>
                                                                 </Link>
                                                                 <Link to="/login" className="wishlist-button heart">
                                                                     <span className="number-like">{item.wishlist}</span>

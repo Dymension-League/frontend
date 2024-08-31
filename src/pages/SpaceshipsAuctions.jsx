@@ -56,7 +56,7 @@ const SpaceshipAuctions = ({ data }) => {
                                                     <div className="sc-card-product">
                                                         <div className="card-media">
                                                             {/*<Link to="/item-details-01">*/}
-                                                                <video src={item.img} autoPlay loop muted />
+                                                                <video src={item.img} autoPlay loop controls />
                                                             {/*</Link>*/}
                                                         </div>
                                                         <div className="card-title">

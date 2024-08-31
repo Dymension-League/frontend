@@ -24,7 +24,7 @@ const BettingCard: React.FC<BettingCardProps> = ({ token, onSelectTeam, selected
     <div className={`fl-item col-xl-3 col-lg-6 col-md-6 ${selected ? "border border-primary" : ""}`} onClick={onSelectTeam}>
         <div className="sc-card-product">
             <div className="card-media">
-                <video src={token.img || ''} autoPlay loop muted />
+                <video src={token.img || ''} autoPlay loop controls />
             </div>
             <div className="card-title">
                 <h5>{token.name}</h5>

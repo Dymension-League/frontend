@@ -33,7 +33,7 @@ const ShipCard = ({
                     swiperRef.current.update()
                   }
                 }}
-                autoPlay loop muted
+                autoPlay loop controls
             />
           </div>
           <div className="card-title">
