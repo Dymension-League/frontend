@@ -103,11 +103,9 @@ const EnrollTeam: React.FC = () => {
       <section className="tf-section live-auctions">
         <div className="themesflat-container">
           <h1>My Teams</h1>
-          {/*<div className="container">*/}
           {teams.map((team, index) => (
             <TeamCard key={index} team={team} onAction={handleEnroll} />
           ))}
-          {/*</div>*/}
         </div>
       </section>
     </Fragment>

@@ -72,6 +72,7 @@ const SliderShips = () => {
                                         autoPlay
                                         loop
                                         muted
+                                        playsInline
                                     />
                                 </div>
                             </SwiperSlide>

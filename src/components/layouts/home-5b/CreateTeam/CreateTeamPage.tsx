@@ -226,7 +226,7 @@ const CreateTeam = () => {
                                                 <video
                                                     ref={el => el && token.id !== undefined && handleImageLoad(token as Ship, el)}
                                                     src={token.img || ''}
-                                                    autoPlay loop controls
+                                                    autoPlay loop controls playsInline muted
                                                 />
                                             </div>
                                             <div className="card-title">

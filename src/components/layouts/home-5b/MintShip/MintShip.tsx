@@ -126,7 +126,7 @@ const MintShip: React.FC = () => {
             {loadedImages.map((image, index) => (
               <SwiperSlide key={index}>
                 <div>
-                  <video src={image} autoPlay loop muted />
+                  <video src={image} autoPlay loop muted playsInline />
                 </div>
               </SwiperSlide>
             ))}

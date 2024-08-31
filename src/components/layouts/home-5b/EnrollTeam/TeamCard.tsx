@@ -151,7 +151,9 @@ const TeamCard: React.FC<TeamCardProps> = ({
                     src={ship.img}
                     autoPlay
                     loop
+                    muted
                     controls
+                    playsInline
                   />
                 </div>
                 <div className="card-title">
