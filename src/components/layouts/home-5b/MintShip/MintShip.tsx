@@ -28,7 +28,7 @@ const MintShip: React.FC = () => {
   const [spaceshipsData, setSpaceshipsData] = useState<Spaceship[]>([]);
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const [isMinting, setIsMinting] = useState(false);
-  const [numberOfShips, setNumberOfShips] = useState<number>(1);
+  const [numberOfShips, setNumberOfShips] = useState<number>(3);
   const [notification, setNotification] = useState<string>("");
   const [notificationType, setNotificationType] = useState<"success" | "error">(
       "success",
@@ -53,7 +53,7 @@ const MintShip: React.FC = () => {
     fetchSpaceshipsData();
   }, []);
 
-  const subtitle = "Dymension League Marketplace";
+  const subtitle = "Dymension League";
   const title =
       "Mint, Trade, and Command Your Fleet of Extraordinary Space Vessels";
   const description =
@@ -92,11 +92,11 @@ const MintShip: React.FC = () => {
             <h4 className="mg-bt-11">
               <span className="fill">{description}</span>
             </h4>
-            <p />
-            <p />
-            <p />
-            <p />
-            <MintSection
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+             <MintSection
               numberOfShips={numberOfShips}
               setNumberOfShips={setNumberOfShips}
               handleMint={handleMintShip}
