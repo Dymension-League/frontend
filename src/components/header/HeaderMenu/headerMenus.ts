@@ -22,13 +22,13 @@ const headerMenus: HeaderMenuItem[] = [
   },
   {
     id: 4,
-    name: "Governance Simulator",
-    links: "/governance-simulator",
+    name: "Bet",
+    links: "/bet",
   },
   {
     id: 5,
-    name: "Bet",
-    links: "/bet",
+    name: "Leaderboard",
+    links: "/leaderboard",
   },
   // {
   //     id: 6,
