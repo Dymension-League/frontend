@@ -123,10 +123,10 @@ const MintShip: React.FC = () => {
             speed={2000}
             className="slider-ships"
           >
-            {loadedImages.map((image, index) => (
+            {spaceshipsData.map((image, index) => (
               <SwiperSlide key={index}>
                 <div>
-                  <video src={image} autoPlay loop muted playsInline />
+                  <video src={image.img} autoPlay loop muted playsInline />
                 </div>
               </SwiperSlide>
             ))}
