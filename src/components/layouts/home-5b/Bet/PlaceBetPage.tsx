@@ -170,49 +170,47 @@ const PlaceBet: React.FC = () => {
         </div>
         {teams.length > 0 ? (
           teams.map((team, index) => (
-            <div key={index} className="row mb-4 align-items-center">
-              <div
-                className={`col-md-12 p-4 mb-5 ${selectedTeam && selectedTeam.teamId === team.teamId ? "selected-card" : ""}`}
-              >
-                <TeamCard
-                  containerClassName="col-md-12"
-                  productClassName="mb-0"
-                  onSelectTeam={onSelectTeam}
-                  team={team}
-                />
-              </div>
-              <div className="col-md-4 offset-md-3 d-flex justify-content-between align-items-center">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Enter bet amount"
-                  value={betAmount}
-                  onChange={(e) => setBetAmount(Number(e.target.value))}
-                  disabled={
-                    (!bettingAllowed ||
-                      selectedTeam?.teamId !== team.teamId) === true
-                  }
-                  style={{ width: "60%" }}
-                />
-                <button
-                  onClick={handleBet}
-                  className={`enroll-button ${(!bettingAllowed || betAmount <= 0 || selectedTeam?.teamId !== team.teamId) === true ? "disabled" : "enabled"}`}
+              <div key={index} className="row mb-4 align-items-center">
+                <div
+                    className={`col-md-12 p-4 mb-5 ${selectedTeam && selectedTeam.teamId === team.teamId ? "selected-card" : ""}`}
                 >
-                  Place Bet
-                </button>
+                  <TeamCard
+                      containerClassName="col-md-12"
+                      productClassName="mb-0"
+                      onSelectTeam={onSelectTeam}
+                      team={team}
+                  />
+                </div>
+                <div className="col-md-4 offset-md-3 d-flex justify-content-between align-items-center">
+                  <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter bet amount"
+                      value={betAmount}
+                      onChange={(e) => setBetAmount(Number(e.target.value))}
+                      disabled={!selectedTeam || selectedTeam?.teamId !== team.teamId}
+                      style={{width: "60%"}}
+                  />
+                  <button
+                      onClick={handleBet}
+                      className={`enroll-button ${selectedTeam && betAmount > 0 && selectedTeam?.teamId === team.teamId ? "enabled" : "disabled"}`}
+                      disabled={!(selectedTeam && betAmount > 0 && selectedTeam?.teamId === team.teamId)}
+                  >
+                    Place Bet
+                  </button>
+                </div>
               </div>
-            </div>
           ))
         ) : (
-          <div className="text-center p-3">
-            <p>No teams available for betting.</p>
-          </div>
+            <div className="text-center p-3">
+              <p>No teams available for betting.</p>
+            </div>
         )}
         <div className="row">
           <div className="col-md-8 offset-md-2 text-center mt-4">
             <button
-              className="btn btn-secondary"
-              onClick={handleInitializeLeague}
+                className="btn btn-secondary"
+                onClick={handleInitializeLeague}
             >
               1. Initialize League TEST
             </button>
