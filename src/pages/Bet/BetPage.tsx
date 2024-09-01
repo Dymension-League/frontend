@@ -4,7 +4,7 @@ import NewFooter from "../../components/footer/NewFooter";
 import { Link } from "react-router-dom";
 import React from "react";
 
-const CreateTeamPage = () => {
+const BetPage = () => {
   return (
     <div className="home-5">
       <Header />
@@ -38,4 +38,4 @@ const CreateTeamPage = () => {
   );
 };
 
-export default CreateTeamPage;
+export default BetPage;
