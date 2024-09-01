@@ -94,16 +94,8 @@ const useGameLeagueService = () => {
     const contract = getContract(signer);
     const leagueIdBigInt = BigInt(leagueId);
     const teamIdBigInt = BigInt(teamId);
-    console.log("what the fuck");
     const amountInWei = ethers.parseEther(amount.toString());
-    console.log("what the fuck afer");
     try {
-      console.log(
-        "types",
-        typeof leagueIdBigInt,
-        typeof teamIdBigInt,
-        typeof amountInWei,
-      );
       const tx = await contract.placeBet(leagueIdBigInt, teamIdBigInt, {
         value: amountInWei,
       });

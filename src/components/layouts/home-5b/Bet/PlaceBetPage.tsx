@@ -95,7 +95,7 @@ const PlaceBet: React.FC = () => {
   };
 
   const handleBet = async () => {
-    if (!selectedTeam || betAmount <= 0 || !bettingAllowed) {
+    if (!selectedTeam || betAmount <= 0) {
       notify("Invalid bet or betting is not allowed at this time.", "error");
       return;
     }
