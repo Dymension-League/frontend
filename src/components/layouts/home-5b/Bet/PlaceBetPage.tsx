@@ -194,7 +194,7 @@ const PlaceBet: React.FC = () => {
                             />
                             <button
                                 onClick={handleBet}
-                                className={`sc-button style-3 fl-button pri-3 ${selectedTeam && betAmount > 0 ? "enabled" : "disabled"}`}
+                                className={`create-team-button ${selectedTeam && betAmount > 0 ? "enabled" : "disabled"}`}
                             >
                               Place Bet
                             </button>
