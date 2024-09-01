@@ -21,6 +21,7 @@ import identicon6 from "../assets/demo/identicons/identicon_6.png";
 
 // Medals
 const medals = ["🥇", "🥈", "🥉"];
+const otherIcon = "⭐"; // Use this icon for rankings beyond the top 3
 
 const Leaderboard = () => {
   const [data] = useState([
@@ -122,216 +123,131 @@ const Leaderboard = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="table-ranking">
-                <div
-                  className="flex th-title"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "10px 0",
-                    borderBottom: "2px solid var(--primary-color4)",
-                  }}
-                >
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3>Rank</h3>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3>Team</h3>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3></h3>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3>Matches Won</h3>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3>Winning Amount</h3>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3>Bet Winning Ratio</h3>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "var(--primary-color2)",
-                    }}
-                  >
-                    <h3>Addresses Betting</h3>
-                  </div>
-                </div>
                 {data.slice(0, visible).map((item, index) => (
-                  <div
-                    key={index}
-                    className="fl-item2"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "10px 0",
-                      borderBottom: "1px solid var(--primary-color4)",
-                      backgroundColor: "var(--primary-color)",
-                      borderRadius: "8px",
-                      marginBottom: "8px",
-                    }}
-                  >
                     <div
-                      style={{
-                        flex: "1",
-                        textAlign: "center",
-                        fontSize: "22px",
-                        color: "var(--primary-color2)",
-                      }}
+                      id="correct-card"
+                      key={index}
+                      className="content-item2 open"
                     >
-                      <span>
-                        {index + 1}
-                        {index < 3 ? ` ${medals[index]}` : ""}
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        flex: "2",
-                        textAlign: "left",
-                        paddingLeft: "10px",
-                        display: "flex",
-                        alignItems: "center",
-                        color: "var(--primary-color2)",
-                      }}
-                    >
-                      <div className="media">
-                        <img
-                          src={item.img}
-                          alt="Team"
-                          style={{ maxWidth: "100px", marginRight: "25px" }}
-                        />
-                      </div>
-                      <div className="content-collection pad-t-4">
-                        <h5 className="title mb-15">
-                          <Link
-                            to="/item-detail"
-                            style={{
-                              color: "var(--primary-color3)",
-                              fontSize: "20px",
-                            }}
-                          >
-                            "{item.title}"
-                          </Link>
-                        </h5>
-                        <div
-                          className="author flex"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            color: "var(--primary-color4)",
-                          }}
-                        >
-                          <div
-                            className="author-avatar"
-                            style={{ marginRight: "5px" }}
-                          >
-                            <img
-                              src={item.imgAuthor}
-                              alt="Identicon"
-                              style={{
-                                width: "30px",
-                                height: "30px",
-                                borderRadius: "50%",
-                              }}
-                            />
+                      <div className="col-item">
+                        <div className="sc-card-product menu_card style-h7">
+                          <div className="wrap-media">
+                            <div className="card-media">
+                              <Link to="/item-details-01">
+                                <img src={item.img} alt="Axies" />
+                              </Link>
+                            </div>
                           </div>
-                          <div className="content">
-                            <p>Owned By</p>
-                            <h6 style={{ color: "var(--primary-color2)" }}>
-                              <Link to="/authors-01">{item.nameAuthor}</Link>
-                            </h6>
+                          <div className="card-title d-flex flex-column">
+                            <div
+                              style={{
+                                width: "100%",
+                              }}
+                              className="d-flex flex-column"
+                            >
+                              <div className="d-flex flex-row align-items-center">
+                                <div className="d-flex align-items-center">
+                                  <span
+                                    style={{
+                                      fontSize: "16px",
+                                      fontWeight: "700",
+                                      lineHeight: "24px",
+                                    }}
+                                  >
+                                    {index + 1}{" "}
+                                    {index < 3
+                                      ? ` ${medals[index]}`
+                                      : ` ${otherIcon}`}{" "}
+                                  </span>
+                                </div>
+                                <p
+                                  className="m-2"
+                                  style={{
+                                    marginLeft: "8px",
+                                    fontSize: "14px",
+                                    lineHeight: "24px",
+                                    textTransform: "uppercase",
+                                    fontWeight: "700",
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  Team
+                                </p>
+                              </div>
+                              <h4>
+                                <Link to="/item-details-01">{item.title}</Link>
+                              </h4>
+                            </div>
+                            <div
+                              style={{
+                                width: "100%",
+                              }}
+                              className="author d-flex flex-row align-items-center"
+                            >
+                              <div
+                                className="d-flex justify-content-center align-items-center"
+                                style={{
+                                  marginRight: "5px",
+                                  minHeight: "40px", // Ensures the container is tall enough to align with the text
+                                }}
+                              >
+                                <img
+                                  src={item.imgAuthor}
+                                  alt="Identicon"
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    borderRadius: "50%",
+                                    alignSelf: "center", // Ensures the image stays centered
+                                  }}
+                                />
+                              </div>
+                              <div className="d-flex flex-column justify-content-center">
+                                <p
+                                  style={{
+                                    fontSize: "0.895rem",
+                                    lineHeight: "1.5rem",
+                                    marginBottom: 0,
+                                  }}
+                                >
+                                  Owned By
+                                </p>
+                                <h6 style={{ color: "var(--primary-color2)" }}>
+                                  <Link to="/authors-01">
+                                    {item.nameAuthor}
+                                  </Link>
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="meta-info style">
+                            <p>Matches won</p>
+                            <span style={{
+															fontSize: "20px",
+														}}>{item.matchesWon}</span>
+                          </div>
+                          <div className="meta-info style">
+                            <p>Winning amount</p>
+                            <span style={{
+															fontSize: "20px",
+														}}>{item.winningAmount}</span>
+                          </div>
+                          <div className="meta-info style">
+                            <p>Bet winning ratio</p>
+                            <span style={{
+															fontSize: "20px",
+														}}>{item.betWinningRatio}</span>
+                          </div>
+                          <div className="meta-info style">
+                            <p>Number of bets</p>
+                            <span style={{
+															fontSize: "20px",
+														}}>{item.addressesBetting}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div
-                      style={{
-                        flex: "1",
-                        textAlign: "center",
-                        color: "var(--primary-color2)",
-                        fontSize: "20px",
-                      }}
-                    >
-                      <span>{item.matchesWon}</span>
-                    </div>
-                    <div
-                      style={{
-                        flex: "1",
-                        textAlign: "center",
-                        color: "var(--primary-color2)",
-                        fontSize: "20px",
-                      }}
-                    >
-                      <span>{item.winningAmount}</span>
-                    </div>
-                    <div
-                      style={{
-                        flex: "1",
-                        textAlign: "center",
-                        color: "var(--primary-color2)",
-                        fontSize: "20px",
-                      }}
-                    >
-                      <span>{item.betWinningRatio}</span>
-                    </div>
-                    <div
-                      style={{
-                        flex: "1",
-                        textAlign: "center",
-                        color: "var(--primary-color2)",
-                        fontSize: "20px",
-                      }}
-                    >
-                      <span>{item.addressesBetting}</span>
-                    </div>
-                  </div>
                 ))}
                 {visible < data.length && (
                   <div className="col-md-12 wrap-inner load-more text-center">
