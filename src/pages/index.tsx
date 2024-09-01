@@ -39,6 +39,7 @@ import HomePage from "./Home/HomePage";
 import NewTeam from "../components/layouts/home-5b/CreateTeam/NewTeam";
 import EnrollTeamPage from "./EnrollTeam/EnrollTeamPage";
 import NotFound from "./NotFound";
+import Leaderboard from "./Leaderboard";
 
 // Define the type for a route
 interface Route {
@@ -50,10 +51,13 @@ const isProdEnv = process.env.REACT_APP_PROD_ENV === "true";
 
 // Define routes based on environment
 const routes: Route[] = isProdEnv
-  ? [{ path: "/", component: <HomePage /> },
-    { path: '*', component: <NotFound /> },]
+  ? [
+      { path: "/", component: <HomePage /> },
+      { path: "*", component: <NotFound /> },
+    ]
   : [
       { path: "/", component: <HomePage /> },
+      { path: "/leaderboard", component: <Leaderboard /> },
       { path: "/home-02", component: <Home02 /> },
       { path: "/home-03", component: <Home03 /> },
       { path: "/home-04", component: <Home04 /> },
@@ -91,7 +95,7 @@ const routes: Route[] = isProdEnv
       { path: "/faq", component: <FAQ /> },
       { path: "/contact-01", component: <Contact01 /> },
       { path: "/contact-02", component: <Contact02 /> },
-      { path: '*', component: <NotFound /> },
+      { path: "*", component: <NotFound /> },
     ];
 
 export default routes;
