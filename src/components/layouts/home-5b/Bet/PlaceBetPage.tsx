@@ -7,6 +7,7 @@ import useGameLeagueService, {
 import useMintService from "../../../../services/contracts/cosmoships.service";
 import { fetchTokensWithMetadata } from "../CreateTeam/CreateTeamPage";
 import TeamCard, { Ship, Team } from "../EnrollTeam/TeamCard";
+import '../../../../components/layouts/home-5b/styles/Home05b.css';
 
 interface Notification {
   message: string;
@@ -94,7 +95,7 @@ const PlaceBet: React.FC = () => {
   };
 
   const handleBet = async () => {
-    if (!selectedTeam || betAmount <= 0 || !bettingAllowed) {
+    if (!selectedTeam || betAmount <= 0) {
       notify("Invalid bet or betting is not allowed at this time.", "error");
       return;
     }
@@ -158,9 +159,10 @@ const PlaceBet: React.FC = () => {
   return (
     <section className="tf-section live-auctions">
       <div className="themesflat-container justify-content-center">
-        {league && <h1>{`Place bet for League ${league.id}`}</h1>}
+        {league && <h1 className="heading text-center " style={{ marginBottom: '40px' }}>{`Place bet for League ${league.id}`}</h1>}
+
         <div className="row">
-          {notification && (
+        {notification && (
             <div className="col-md-8 offset-md-2 text-center mt-3">
               <p className={`alert alert-${notification.type}`}>
                 {notification.message}
@@ -169,50 +171,48 @@ const PlaceBet: React.FC = () => {
           )}
         </div>
         {teams.length > 0 ? (
-          teams.map((team, index) => (
-            <div key={index} className="row mb-4 align-items-center">
-              <div
-                className={`col-md-12 p-4 mb-5 ${selectedTeam && selectedTeam.teamId === team.teamId ? "selected-card" : ""}`}
-              >
-                <TeamCard
-                  containerClassName="col-md-12"
-                  productClassName="mb-0"
-                  onSelectTeam={onSelectTeam}
-                  team={team}
-                />
-              </div>
-              <div className="col-md-4 offset-md-3 d-flex justify-content-between align-items-center">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Enter bet amount"
-                  value={betAmount}
-                  onChange={(e) => setBetAmount(Number(e.target.value))}
-                  disabled={
-                    (!bettingAllowed ||
-                      selectedTeam?.teamId !== team.teamId) === true
-                  }
-                  style={{ width: "60%" }}
-                />
-                <button
-                  onClick={handleBet}
-                  className={`enroll-button ${(!bettingAllowed || betAmount <= 0 || selectedTeam?.teamId !== team.teamId) === true ? "disabled" : "enabled"}`}
-                >
-                  Place Bet
-                </button>
-              </div>
-            </div>
-          ))
+            teams.map((team, index) => (
+                <div className="row mb-4 align-items-center" key={index}>
+                  <div
+                      className={`col-md-12 p-4 ${selectedTeam && selectedTeam.teamId === team.teamId ? "selected-card" : ""}`}>
+                    <div
+                        className={`betting-group ${selectedTeam && selectedTeam.teamId === team.teamId ? "active" : ""}`}>
+                      <TeamCard
+                          containerClassName="col-md-12"
+                          productClassName="mb-0"
+                          onSelectTeam={() => setSelectedTeam(team)}
+                          team={team}
+                      />
+                      {selectedTeam && selectedTeam.teamId === team.teamId && (
+                          <div className="bet-input-group">
+                            <input
+                                type="number"
+                                className="form-control"
+                                placeholder="Enter bet amount"
+                                value={betAmount}
+                                onChange={(e) => setBetAmount(Number(e.target.value))}
+                            />
+                            <button
+                                onClick={handleBet}
+                                className={`create-team-button ${selectedTeam && betAmount > 0 ? "enabled" : "disabled"}`}
+                            >
+                              Place Bet
+                            </button>
+                          </div>
+                      )}
+                    </div>
+                  </div>
+                </div>))
         ) : (
-          <div className="text-center p-3">
-            <p>No teams available for betting.</p>
-          </div>
+            <div className="text-center p-3">
+              <p>No teams available for betting.</p>
+            </div>
         )}
         <div className="row">
           <div className="col-md-8 offset-md-2 text-center mt-4">
             <button
-              className="btn btn-secondary"
-              onClick={handleInitializeLeague}
+                className="btn btn-secondary"
+                onClick={handleInitializeLeague}
             >
               1. Initialize League TEST
             </button>
