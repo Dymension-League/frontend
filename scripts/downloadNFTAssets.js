@@ -1,18 +1,14 @@
-const fs = require("fs");
 const path = require("path");
-const fetch = require("node-fetch");
 const dotenv = require("dotenv");
+const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 const NFTCacheService = require("../src/services/NFTCacheService");
-
 // Set up path to root directory
 const rootDir = path.resolve(__dirname, '..');
+const fs = require('fs').promises;
 
 // Load environment variables
 dotenv.config({ path: path.join(rootDir, '.env') });
 
-console.log("Environment variables loaded.");
-
-// Define config based on environment variables
 const config = {
     ipfsGateway: process.env.REACT_APP_IPFS_GATEWAY || "http://localhost:8080/ipfs/",
 };
@@ -66,46 +62,114 @@ function convertIPFSUrl(url) {
     }
 }
 
+
+async function processToken(tokenId, config, NFTCacheService) {
+    try {
+        console.log(`Processing token ${tokenId}...`);
+
+        const metadataPath = path.join(NFTCacheService.metadataDir, `${tokenId}.json`);
+        let metadata;
+
+        // Check if metadata file exists
+        if (await fs.access(metadataPath).then(() => true).catch(() => false)) {
+            console.log(`Metadata for token ${tokenId} already exists, reading from file.`);
+            metadata = JSON.parse(await fs.readFile(metadataPath, 'utf-8'));
+        } else {
+            const metadataUrl = `${config.ipfsGateway}/${tokenId}`;
+            metadata = await retryWithBackoff(async () => {
+                console.log(`Fetching metadata from URL: ${metadataUrl}`);
+                return await NFTCacheService.getMetadata(metadataUrl, tokenId);
+            });
+        }
+
+        console.log(`Metadata for token ${tokenId}:`, metadata);
+
+        if (metadata.image) {
+            const imageUrl = convertIPFSUrl(metadata.image);
+            const imagePath = path.join(NFTCacheService.imagesDir, path.basename(imageUrl));
+
+            // Check if image file exists
+            if (await fs.access(imagePath).then(() => true).catch(() => false)) {
+                console.log(`Image for token ${tokenId} already exists at ${imagePath}`);
+            } else {
+                await retryWithBackoff(async () => {
+                    console.log(`Fetching image for token ${tokenId} from URL: ${imageUrl}`);
+                    await NFTCacheService.getImage(imageUrl, tokenId);
+                });
+            }
+        } else {
+            console.warn(`No image found for token ${tokenId}`);
+        }
+
+        console.log(`Token ${tokenId} processed successfully.`);
+    } catch (error) {
+        console.error(`Error processing token ${tokenId}:`, error);
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+}
+
+async function retryWithBackoff(fn, maxRetries = 5, initialDelay = 1000) {
+    let retries = 0;
+    while (retries < maxRetries) {
+        try {
+            return await fn();
+        } catch (error) {
+            retries++;
+            if (retries === maxRetries) throw error;
+            const delay = initialDelay * Math.pow(2, retries);
+            console.log(`Retry ${retries}/${maxRetries} after ${delay}ms`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+}
+
 async function downloadNFTAssets() {
     console.log("Starting downloadNFTAssets function");
 
-    try {
-        const totalTokens = 1500; // Define the number of tokens you want to process
+    const totalTokens = 1500;
+    const numWorkers = 4; // Adjust based on your system's capabilities
+    const tokensPerWorker = Math.ceil(totalTokens / numWorkers);
 
-        for (let tokenId = 1; tokenId <= totalTokens; tokenId++) {
-            try {
-                console.log(`Processing token ${tokenId}...`);
+    const workers = [];
 
-                const metadataUrl = `${config.ipfsGateway}/${tokenId}`;
+    for (let i = 0; i < numWorkers; i++) {
+        const startToken = i * tokensPerWorker + 1;
+        const endToken = Math.min((i + 1) * tokensPerWorker, totalTokens);
 
-                console.log(`Fetching metadata from URL: ${metadataUrl}`);
-                const metadata = await NFTCacheService.getMetadata(metadataUrl, tokenId);
-
-                // Log the retrieved metadata
-                console.log(`Metadata for token ${tokenId}:`, metadata);
-
-                if (metadata.image) {
-                    const imageUrl = convertIPFSUrl(metadata.image);
-                    console.log(`Fetching image for token ${tokenId} from URL: ${imageUrl}`);
-                    await NFTCacheService.getImage(imageUrl, tokenId);
-                } else {
-                    console.warn(`No image found for token ${tokenId}`);
-                }
-
-                console.log(`Token ${tokenId} processed successfully.`);
-            } catch (error) {
-                console.error(`Error processing token ${tokenId}:`, error);
-            }
-
-            // Add a small delay between requests to avoid overwhelming the gateways
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
-
-        console.log('Download completed.');
-    } catch (error) {
-        console.error("Error in downloadNFTAssets:", error);
+        workers.push(new Worker(__filename, {
+            workerData: { startToken, endToken, config }
+        }));
     }
+
+    for (const worker of workers) {
+        worker.on('message', console.log);
+        worker.on('error', console.error);
+        worker.on('exit', (code) => {
+            if (code !== 0) console.error(`Worker stopped with exit code ${code}`);
+        });
+    }
+
+    await Promise.all(workers.map(worker => new Promise(resolve => worker.on('exit', resolve))));
+    console.log('Download completed.');
 }
+
+if (isMainThread) {
+    console.log("Script started");
+    downloadNFTAssets().catch(console.error).finally(() => {
+        console.log("Script finished");
+    });
+} else {
+    const { startToken, endToken, config } = workerData;
+
+    (async () => {
+        for (let tokenId = startToken; tokenId <= endToken; tokenId++) {
+            await processToken(tokenId, config, NFTCacheService);
+        }
+        parentPort.postMessage(`Worker finished processing tokens ${startToken} to ${endToken}`);
+    })();
+}
+
 console.log("Script started");
 downloadNFTAssets().catch(console.error).finally(() => {
     console.log("Script finished");
