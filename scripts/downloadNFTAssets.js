@@ -26,6 +26,13 @@ const METADATA_CID = 'bafybeicfhwtczkruomu6cvl6wj7pix5inme4hknozepvjbfkunigtgvdk
 
 console.log("Constants set:", { IPFS_GATEWAYS, METADATA_CID });
 
+async function checkAllFilesExist(totalTokens, NFTCacheService) {
+    const metadataFiles = await fs.readdir(NFTCacheService.metadataDir);
+    const imageFiles = await fs.readdir(NFTCacheService.imagesDir);
+
+    return metadataFiles.length === totalTokens && imageFiles.length === totalTokens;
+}
+
 // Include the convertIPFSUrl function directly in this file
 function convertIPFSUrl(url) {
     if (!url || typeof url !== 'string') {
@@ -128,7 +135,11 @@ async function downloadNFTAssets() {
     console.log("Starting downloadNFTAssets function");
 
     const totalTokens = 1500;
-    const numWorkers = 4; // Adjust based on your system's capabilities
+    if (await checkAllFilesExist(totalTokens, NFTCacheService)) {
+        console.log("All files already exist. No download necessary.");
+        return;
+    }
+    const numWorkers = 4; // !!Number of workers to spawn - can be adjusted based on system resources
     const tokensPerWorker = Math.ceil(totalTokens / numWorkers);
 
     const workers = [];

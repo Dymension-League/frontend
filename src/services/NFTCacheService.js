@@ -3,13 +3,6 @@ const path = require('path');
 const fetch = require('node-fetch');
 const Redis = require('ioredis');
 
-const IPFS_GATEWAYS = [
-    "http://localhost:8080/ipfs/",
-    "https://ipfs.io/ipfs/",
-    "https://cloudflare-ipfs.com/ipfs/",
-    "https://gateway.pinata.cloud/ipfs/"
-];
-
 class NFTCacheService {
     constructor() {
         this.redis = null;
